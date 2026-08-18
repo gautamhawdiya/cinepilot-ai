@@ -1,0 +1,263 @@
+{
+  "call_sheet_id": "TLS-CS-001",
+  "project_title": "THE LAST FRAME",
+  "production_company": "TBD",
+  "project_manager": "TBD",
+  "date": null,
+  "genre": "Sci-Fi / Mystery",
+  "logline": "A freelance filmmaker discovers a mysterious digital camera that records events from her own future, forcing her to confront a looming catastrophe and question the trustworthiness of her producer.",
+  "shoot_days_total": 2,
+  "shoot_days": [
+    {
+      "day_number": 1,
+      "date": null,
+      "location": "MAYA'S APARTMENT",
+      "crew_call": "08:00",
+      "first_shot": "09:00",
+      "lunch_break": "13:00 - 14:00",
+      "wrap": "19:00",
+      "scenes_scheduled": [
+        {
+          "scene_number": 1,
+          "heading": "INT. MAYA'S APARTMENT - NIGHT",
+          "summary": "Maya discovers her old digital camera recording footage from the future.",
+          "estimated_shooting_time": "3 hours",
+          "characters_present": [
+            "MAYA SEN"
+          ],
+          "props": [
+            "Three monitors",
+            "Old digital camera",
+            "Laptop",
+            "Phone"
+          ],
+          "vfx_requirements": [
+            "Digital camera recording light turning on mysteriously",
+            "Digital camera screen displaying future folder and video files"
+          ],
+          "notes": "Focus on Maya's reactions and the mysterious activation of the camera."
+        },
+        {
+          "scene_number": 2,
+          "heading": "ON THE LAPTOP SCREEN - VIDEO",
+          "summary": "Future Maya warns Maya about the train and Daniel.",
+          "estimated_shooting_time": "2.5 hours",
+          "characters_present": [
+            "FUTURE MAYA"
+          ],
+          "props": [
+            "Laptop"
+          ],
+          "vfx_requirements": [
+            "Laptop screen displaying future video files",
+            "Apartment with overturned furniture and shattered window",
+            "Apartment lights flickering",
+            "Pixelation effect on Future Maya's image"
+          ],
+          "notes": "Careful planning for screen content and VFX integration. Ensure laptop is positioned for easy filming of screen inserts."
+        },
+        {
+          "scene_number": 3,
+          "heading": "INT. MAYA'S APARTMENT - LATER",
+          "summary": "Daniel warns Maya to destroy the camera.",
+          "estimated_shooting_time": "3 hours",
+          "characters_present": [
+            "MAYA SEN",
+            "DANIEL"
+          ],
+          "props": [
+            "Old digital camera",
+            "Laptop"
+          ],
+          "vfx_requirements": [],
+          "notes": "Build tension between Maya and Daniel. Ensure the old digital camera is prominently featured in Maya's possession."
+        }
+      ],
+      "cast_on_call": [
+        "MAYA SEN",
+        "DANIEL"
+      ],
+      "crew_on_call": [
+        "Director",
+        "1st Assistant Director",
+        "Director of Photography",
+        "Gaffer",
+        "Key Grip",
+        "Sound Mixer",
+        "Production Designer",
+        "Wardrobe Stylist",
+        "Hair & Makeup Artist",
+        "Script Supervisor",
+        "VFX Supervisor"
+      ],
+      "required_props": [
+        "Three monitors",
+        "Old digital camera",
+        "Laptop",
+        "Phone"
+      ],
+      "required_equipment": [
+        "Camera package",
+        "Basic lighting kit",
+        "Sound recording kit",
+        "Grip equipment",
+        "Video village setup"
+      ],
+      "production_notes": [
+        "Practical set dressing for Maya's apartment, including functioning monitors, laptop, and phone.",
+        "Coordinate VFX team for on-set supervision of digital camera light, screen content, and future apartment destruction elements.",
+        "Ensure old digital camera is prepped for VFX or capable of displaying pre-loaded content if required."
+      ],
+      "safety_and_logistics": [
+        "Ensure clear pathways for crew and equipment within the apartment location.",
+        "Standard first aid kit on site.",
+        "Fire exits and emergency procedures communicated to all crew."
+      ]
+    },
+    {
+      "day_number": 2,
+      "date": null,
+      "location": "TRAIN STATION",
+      "crew_call": "16:00",
+      "first_shot": "17:00",
+      "lunch_break": "21:00 - 22:00",
+      "wrap": "04:00",
+      "scenes_scheduled": [
+        {
+          "scene_number": 4,
+          "heading": "INT. TRAIN STATION - NIGHT",
+          "summary": "Maya confronts the future shown by the camera at the train station.",
+          "estimated_shooting_time": "6 hours",
+          "characters_present": [
+            "MAYA SEN",
+            "DANIEL"
+          ],
+          "props": [
+            "Old digital camera"
+          ],
+          "vfx_requirements": [
+            "Digital camera screen displaying future video files",
+            "Train derailing",
+            "Figure appearing behind Maya (obscured by distortion/static)"
+          ],
+          "notes": "Emphasize Maya's paranoia and the visual contrast between the camera's footage and reality. Requires careful coordination in a public setting."
+        }
+      ],
+      "cast_on_call": [
+        "MAYA SEN",
+        "DANIEL"
+      ],
+      "crew_on_call": [
+        "Director",
+        "1st Assistant Director",
+        "Director of Photography",
+        "Gaffer",
+        "Key Grip",
+        "Sound Mixer",
+        "Production Designer",
+        "Wardrobe Stylist",
+        "Hair & Makeup Artist",
+        "Script Supervisor",
+        "VFX Supervisor",
+        "Location Manager",
+        "Safety Officer"
+      ],
+      "required_props": [
+        "Old digital camera"
+      ],
+      "required_equipment": [
+        "Camera package",
+        "Compact lighting kit (e.g., LED panels)",
+        "Sound recording kit",
+        "Handheld rig",
+        "Minimal grip equipment",
+        "Walkie-talkies"
+      ],
+      "production_notes": [
+        "Coordinate VFX team for on-set supervision of digital camera screen content (derailed train, figure behind Maya).",
+        "Prepare for crowd management and securing background artist releases or strategies to avoid identifiable public faces.",
+        "Adopt a 'light and fast' approach to minimize equipment footprint and crew size due to potential restrictions.",
+        "Ensure public liability insurance meets the specific minimum requirements of the selected location's operator.",
+        "Develop a comprehensive safety plan, especially if any filming is contemplated near train tracks or moving trains. This plan must strictly adhere to railway safety protocols, including having dedicated safety personnel on set.",
+        "Implement clear protocols for managing public interaction, ensuring that identifiable individuals are not filmed without consent, and that the production does not interfere with passenger comfort or privacy."
+      ],
+      "safety_and_logistics": [
+        "Confirm filming permit requirements with the selected station/railway operator, including specific hours for night shooting and fees.",
+        "Confirm station access rules and restricted areas (e.g., tracks, employee-only zones) with the selected operator.",
+        "Verify permitted filming hours, especially for night shoots, with the local authority.",
+        "Confirm crew restrictions and the need for a compact crew with the selected operator.",
+        "Confirm equipment restrictions (e.g., tripods, artificial lighting, cables, drones, flash photography) with the selected operator.",
+        "Confirm and strictly adhere to all railway safety protocols (e.g., staying behind yellow lines, avoiding obstructing signals, no filming approaching trains, no filming on tracks).",
+        "Brief all crew on railway by-laws and staff authority to stop filming; respect all staff directives to avoid immediate cessation of filming."
+      ]
+    }
+  ],
+  "cast_list": [
+    {
+      "character_name": "MAYA SEN",
+      "actor_name": "TBD"
+    },
+    {
+      "character_name": "FUTURE MAYA",
+      "actor_name": "TBD"
+    },
+    {
+      "character_name": "DANIEL",
+      "actor_name": "TBD"
+    }
+  ],
+  "crew_list": [
+    {
+      "role": "Director",
+      "name": "TBD"
+    },
+    {
+      "role": "1st Assistant Director",
+      "name": "TBD"
+    },
+    {
+      "role": "Director of Photography",
+      "name": "TBD"
+    },
+    {
+      "role": "Gaffer",
+      "name": "TBD"
+    },
+    {
+      "role": "Key Grip",
+      "name": "TBD"
+    },
+    {
+      "role": "Sound Mixer",
+      "name": "TBD"
+    },
+    {
+      "role": "Production Designer",
+      "name": "TBD"
+    },
+    {
+      "role": "Wardrobe Stylist",
+      "name": "TBD"
+    },
+    {
+      "role": "Hair & Makeup Artist",
+      "name": "TBD"
+    },
+    {
+      "role": "Script Supervisor",
+      "name": "TBD"
+    },
+    {
+      "role": "VFX Supervisor",
+      "name": "TBD"
+    },
+    {
+      "role": "Location Manager",
+      "name": "TBD"
+    },
+    {
+      "role": "Safety Officer",
+      "name": "TBD"
+    }
+  ]
+}

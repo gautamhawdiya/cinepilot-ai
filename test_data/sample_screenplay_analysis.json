@@ -1,0 +1,76 @@
+{
+  "title": "THE LAST FRAME",
+  "genre": "Sci-Fi / Mystery",
+  "logline": "A freelance filmmaker discovers a mysterious digital camera that records events from her own future, forcing her to confront a looming catastrophe and question the trustworthiness of her producer.",
+  "characters": [
+    {
+      "name": "MAYA SEN",
+      "description": "A 27-year-old freelance filmmaker."
+    },
+    {
+      "name": "FUTURE MAYA",
+      "description": "Maya's future self appearing in a video."
+    },
+    {
+      "name": "DANIEL",
+      "description": "Maya's producer."
+    }
+  ],
+  "locations": [
+    "MAYA'S APARTMENT",
+    "TRAIN STATION"
+  ],
+  "props": [
+    "Three monitors",
+    "Old digital camera",
+    "Laptop",
+    "Phone"
+  ],
+  "vehicles": [
+    "Train"
+  ],
+  "vfx_requirements": [
+    "Digital camera recording light turning on mysteriously",
+    "Laptop screen displaying future video files",
+    "Apartment with overturned furniture and shattered window",
+    "Figure appearing behind Maya",
+    "Train derailing",
+    "Apartment lights flickering"
+  ],
+  "scenes": [
+    {
+      "scene_number": 1,
+      "heading": "INT. MAYA'S APARTMENT - NIGHT",
+      "location": "MAYA'S APARTMENT",
+      "time_of_day": "NIGHT",
+      "characters": ["MAYA SEN"],
+      "summary": "Maya discovers her old digital camera recording footage from the future."
+    },
+    {
+      "scene_number": 2,
+      "heading": "ON THE LAPTOP SCREEN - VIDEO",
+      "location": "MAYA'S APARTMENT",
+      "time_of_day": "FUTURE",
+      "characters": ["FUTURE MAYA"],
+      "summary": "Future Maya warns Maya about the train and Daniel."
+    },
+    {
+      "scene_number": 3,
+      "heading": "INT. MAYA'S APARTMENT - LATER",
+      "location": "MAYA'S APARTMENT",
+      "time_of_day": "NIGHT",
+      "characters": ["MAYA SEN", "DANIEL"],
+      "summary": "Daniel warns Maya to destroy the camera."
+    },
+    {
+      "scene_number": 4,
+      "heading": "INT. TRAIN STATION - NIGHT",
+      "location": "TRAIN STATION",
+      "time_of_day": "NIGHT",
+      "characters": ["MAYA SEN", "DANIEL"],
+      "summary": "Maya confronts the future shown by the camera at the train station."
+    }
+  ],
+  "scene_count": 4,
+  "estimated_shoot_days": 2
+}

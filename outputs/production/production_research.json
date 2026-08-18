@@ -1,0 +1,86 @@
+{
+  "research_topic": "Practical filming considerations for train stations",
+  "findings": [
+    {
+      "topic": "Filming Permits",
+      "finding": "Commercial filming, including student projects and photography for commercial gain, generally requires a formal permit or contract from the railway operator or station authority. Applications often need detailed information like storyboards or scripts, and can take time to process (e.g., 2 weeks for Caltrain). Fees may apply.",
+      "source_title": "Permits and Station Access | Metro Trains; Filmmaker Safety Tips | Operation Lifesaver; Filming | Caltrain",
+      "source_url": "https://www.metrotrains.com.au/corporate/permits-and-station-access; https://oli.org/safety-near-trains/walking-safely-near-tracks/filmmaker-safety-tips; https://www.caltrain.com/about-caltrain/doing-business/filming",
+      "production_impact": "Permit acquisition is a critical first step for pre-production. The production must factor in application lead times, potential fees, and the need to submit detailed project information, including storyboards/scripts, which requires early planning.",
+      "confidence": "high",
+      "requires_local_verification": true
+    },
+    {
+      "topic": "Station Access",
+      "finding": "Filming is typically restricted to public areas of the station. Access to non-public areas, such as employee-only zones or areas directly on/near tracks, is strictly prohibited without explicit, specific permission and often requires a formal permit and adherence to stringent safety protocols. Interference with station operations, staff duties, passenger flow, or privacy is not permitted.",
+      "source_title": "Permit Terms & Conditions | Metro Trains; Moynihan Train Hall Media Policy | Amtrak; Penn Station New York Media Guidelines - Amtrak Media; Filmmaker Safety Tips | Operation Lifesaver",
+      "source_url": "https://www.metrotrains.com.au/permit-terms-conditions; https://www.amtrak.com/moynihan-train-hall-media-policy; https://media.amtrak.com/nyprenewal/new-york-penn-station-media-guidelines/; https://oli.org/safety-near-trains/walking-safely-near-tracks/filmmaker-safety-tips",
+      "production_impact": "This significantly limits available shooting locations within a station and dictates the need for precise blocking and choreography to avoid disrupting public movement. Any shots requiring access to restricted areas (e.g., tracks) will require extensive negotiation and separate, specific permissions, which might be difficult or impossible to obtain.",
+      "confidence": "high",
+      "requires_local_verification": true
+    },
+    {
+      "topic": "Filming Hours",
+      "finding": "Many railway operators and city authorities impose restrictions on filming during peak hours to minimize disruption. Examples include 7am-9:30am and 4:30pm-6:30pm for exterior pathways of CBD train stations in Melbourne, and 6:00am-10:30am and 3:30pm-7:30pm for Network Rail (UK) stations.",
+      "source_title": "Filming permits | City of Melbourne; Guidelines for taking photos at stations | Network Rail",
+      "source_url": "https://www.melbourne.vic.gov.au/filming-permits; https://www.networkrail.co.uk/who-we-are/railway-enthusiasts/guidelines-for-taking-photos-at-stations",
+      "production_impact": "Night shoots, as suggested by the screenplay, may be more feasible as they often fall outside peak travel times, potentially reducing permit complexities and public interference. However, specific night-time restrictions or additional safety measures may apply and need to be verified with the local authority.",
+      "confidence": "high",
+      "requires_local_verification": true
+    },
+    {
+      "topic": "Crew Restrictions",
+      "finding": "While explicit crew size restrictions aren't universally detailed, rules emphasize that filming activities must not interfere with staff duties or passenger movement. Filming employees without prior written consent is also prohibited.",
+      "source_title": "Permit Terms & Conditions | Metro Trains; Guidelines for taking photos at stations | Network Rail; Moynihan Train Hall Media Policy | Amtrak",
+      "source_url": "https://www.metrotrains.com.au/permit-terms-conditions; https://www.networkrail.co.uk/who-we-are/railway-enthusiasts/guidelines-for-taking-photos-at-stations; https://www.amtrak.com/moynihan-train-hall-media-policy",
+      "production_impact": "This implies a need for a compact, efficient crew to minimize footprint and disruption. Clear communication with station staff is crucial. Any scenes involving interaction with station personnel would require specific approvals and consent forms.",
+      "confidence": "medium",
+      "requires_local_verification": true
+    },
+    {
+      "topic": "Equipment Restrictions",
+      "finding": "Numerous equipment restrictions are common: tripods often require specific permit approval and can be considered tripping hazards; artificial lighting or reflectors (especially on platforms) are often restricted or prohibited; flash photography is generally not allowed due to distraction risks for drivers and staff; drones/aircraft directly above stations are prohibited without specific Civil Aviation Safety Authority (CASA) and railway operator approval; camera wires on the ground are considered tripping hazards; and filming security-related equipment like CCTV is typically disallowed.",
+      "source_title": "Permit Terms & Conditions | Metro Trains; Filming permits | City of Melbourne; Guidelines for taking photos at stations | Network Rail; Moynihan Train Hall Media Policy | Amtrak",
+      "source_url": "https://www.metrotrains.com.au/permit-terms-conditions; https://www.melbourne.vic.gov.au/filming-permits; https://www.networkrail.co.uk/who-we-are/railway-enthusiasts/guidelines-for-taking-photos-at-stations; https://www.amtrak.com/moynihan-train-hall-media-policy",
+      "production_impact": "The production will need to adapt its technical approach, potentially relying on handheld cameras, natural lighting, or small, unobtrusive lighting setups. Drone shots within or directly above stations are highly unlikely to be permitted. Cable management is paramount to prevent trip hazards.",
+      "confidence": "high",
+      "requires_local_verification": true
+    },
+    {
+      "topic": "Insurance Requirements",
+      "finding": "A Public Liability Certificate of Insurance is consistently required, often for a significant minimum amount (e.g., no less than $20M AUD for Metro Trains, specific minimums for Caltrain).",
+      "source_title": "Permits and Station Access | Metro Trains; Filming | Caltrain",
+      "source_url": "https://www.metrotrains.com.au/corporate/permits-and-station-access; https://www.caltrain.com/about-caltrain/doing-business/filming",
+      "production_impact": "The production must secure adequate insurance coverage well in advance of applying for permits. The specific minimum liability amount will need to be confirmed with the chosen location's railway operator.",
+      "confidence": "high",
+      "requires_local_verification": true
+    },
+    {
+      "topic": "Safety Requirements",
+      "finding": "Filming on or near railroad tracks without explicit permission is illegal and extremely dangerous, risking severe injury or death. Specific safety rules include not crossing the yellow line on platforms, avoiding obstructing signals, and not filming a train approaching the platform. Safety protocols are paramount and must ensure the safety of staff, passengers, and crew, as well as prevent any delays to train operations. Railway By-laws often govern conduct on railway property.",
+      "source_title": "Permit Terms & Conditions | Metro Trains; Filmmaker Safety Tips | Operation Lifesaver; Guidelines for taking photos at stations | Network Rail; Hunted Australia Slammed For Not Getting Permission To Film On Trains | Pedestrian.tv",
+      "source_url": "https://www.metrotrains.com.au/permit-terms-conditions; https://oli.org/safety-near-trains/walking-safely-near-tracks/filmmaker-safety-tips; https://www.networkrail.co.uk/who-we-are/railway-enthusiasts/guidelines-for-taking-photos-at-stations; https://www.pedestrian.tv/entertainment/hunted-australia-metro-trains-no-filming-permits",
+      "production_impact": "This is a paramount concern. Any shots near tracks or involving trains will require dedicated safety officers, strict adherence to railway operator guidelines, and potentially specialized equipment or techniques. The production must prioritize safety over creative ambition in these high-risk areas. Filming approaching trains is likely prohibited for safety reasons.",
+      "confidence": "high",
+      "requires_local_verification": true
+    },
+    {
+      "topic": "Public Access Considerations",
+      "finding": "Filming must not interfere with the comfort or convenience of any person on the railway. Identifying passengers in images or film without consent is generally not permitted. Public and private rights to film in public spaces can be complex, and railway staff have the authority to ask individuals to stop filming if it causes a nuisance or interferes with operations. General conduct on public transport is often governed by specific regulations or by-laws.",
+      "source_title": "Permit Terms & Conditions | Metro Trains; Filming a conversation on trains & at stations. | RailUK Forums; Guidelines for taking photos at stations | Network Rail; Moynihan Train Hall Media Policy | Amtrak",
+      "source_url": "https://www.metrotrains.com.au/permit-terms-conditions; https://www.railforums.co.uk/threads/filming-a-conversation-on-trains-at-stations.49040/page-2; https://www.networkrail.co.uk/who-we-are/railway-enthusiasts/guidelines-for-taking-photos-at-stations; https://www.amtrak.com/moynihan-train-hall-media-policy",
+      "production_impact": "The production must be mindful of privacy and public disruption. Crowd control strategies and clear communication with the public (if allowed) will be necessary. Extra care must be taken to avoid capturing identifiable members of the public without consent, or obtaining blanket releases if extensive background extras are needed. Respecting staff directives is crucial to avoid immediate cessation of filming.",
+      "confidence": "high",
+      "requires_local_verification": true
+    }
+  ],
+  "production_recommendations": [
+    "Prioritize securing all necessary filming permits from the relevant railway or transit authority as early as possible in pre-production. Be prepared to provide detailed project documentation, including scripts and storyboards, and account for potential fees and processing times.",
+    "Allocate a significant portion of the budget and schedule for robust public liability insurance, meeting the specific minimum requirements of the chosen location's operator.",
+    "Adopt a 'light and fast' filming approach to minimize equipment footprint and crew size, thereby reducing interference with passengers and operations. Plan to use handheld cameras or very compact setups to navigate equipment restrictions (e.g., tripods, artificial lighting).",
+    "Identify and avoid peak hours for filming. A night shoot, as implied by the screenplay, may offer more flexibility but still requires local verification for specific night-time restrictions and safety measures.",
+    "Develop a comprehensive safety plan, especially if any filming is contemplated near train tracks or moving trains. This plan must strictly adhere to railway safety protocols, including having dedicated safety personnel on set, and assume that filming approaching trains or crossing yellow lines will be prohibited.",
+    "Implement clear protocols for managing public interaction, ensuring that identifiable individuals are not filmed without consent, and that the production does not interfere with passenger comfort or privacy. Be prepared for staff to intervene if rules are breached.",
+    "Carefully consider the creative implications of these restrictions. If the screenplay requires specific shots (e.g., on tracks, with extensive lighting, or large crowd scenes) that conflict with typical railway regulations, alternative solutions such as studio builds, VFX, or re-imagining the scene for a different type of location (e.g., a disused station or a set) should be explored."
+  ]
+}
