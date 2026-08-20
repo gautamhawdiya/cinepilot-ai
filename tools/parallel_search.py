@@ -10,6 +10,7 @@ load_dotenv()
 def parallel_search(
     objective: str,
     search_queries: list[str],
+    max_results: int | None = None,
 ) -> dict:
     """
     Search the live web through Parallel for
@@ -63,6 +64,9 @@ def parallel_search(
                 "excerpts": excerpts,
             }
         )
+
+    if max_results is not None:
+        results = results[:max_results]
 
     return {
         "result_count": len(results),

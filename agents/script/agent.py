@@ -1,5 +1,7 @@
 from google.adk.agents import Agent
 
+from schemas.screenplay import ScreenplayAnalysis
+
 
 MODEL = "gemini-2.5-flash"
 
@@ -91,4 +93,5 @@ script_agent = Agent(
         "production information."
     ),
     instruction=SCRIPT_AGENT_INSTRUCTION,
+    output_schema=ScreenplayAnalysis,
 )

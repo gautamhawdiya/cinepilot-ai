@@ -1,0 +1,69 @@
+{
+  "currency": "INR",
+  "shoot_days": 2,
+  "categories": [
+    {
+      "category": "Cast",
+      "estimated_cost": 120000.0,
+      "assumption": "Estimate for 2 principal actors (Maya and Daniel, with one actress portraying both Maya and Future Maya) for 2 days of shooting at standard independent film rates."
+    },
+    {
+      "category": "Crew",
+      "estimated_cost": 480000.0,
+      "assumption": "Estimate for a core crew (Director, DP, 1st AD, Gaffer, Key Grip, Sound Mixer, Production Designer, Make-up Artist, Production Manager, PAs) for 2 days of shooting."
+    },
+    {
+      "category": "Locations",
+      "estimated_cost": 250000.0,
+      "assumption": "Estimate includes rental/permit fees and basic logistics for Maya's Apartment (requiring both 'normal' and 'ransacked' dressing) and a Train Station location (potentially involving permit fees and access to a train/set piece)."
+    },
+    {
+      "category": "Props & Set Dressing",
+      "estimated_cost": 70000.0,
+      "assumption": "Cost for essential props like digital camera, laptop, monitors, phone, and for set dressing the apartment in both 'normal' and 'ransacked' states."
+    },
+    {
+      "category": "Vehicles",
+      "estimated_cost": 300000.0,
+      "assumption": "Budget for obtaining access to or simulating a train environment (e.g., rental of a train car section, greenscreen setup with practical elements) for shooting the train station and interior train sequences."
+    },
+    {
+      "category": "Visual Effects (VFX)",
+      "estimated_cost": 750000.0,
+      "assumption": "Significant budget allocated for complex VFX requirements including screen composites (camera, laptop, messages), rain enhancement, flickering lights, the figure appearing behind Maya, and especially the detailed train derailing footage."
+    },
+    {
+      "category": "Equipment Rental",
+      "estimated_cost": 200000.0,
+      "assumption": "Rental costs for a professional camera package, lighting equipment, grip equipment, and sound recording gear for 2 days."
+    },
+    {
+      "category": "Transportation & Logistics",
+      "estimated_cost": 50000.0,
+      "assumption": "Covers local transport for cast, crew, and equipment, plus basic logistical support during the shoot days."
+    },
+    {
+      "category": "Post-Production (Basic)",
+      "estimated_cost": 150000.0,
+      "assumption": "Estimate for essential post-production services including editing, basic sound design/mixing, and color grading for a short film."
+    },
+    {
+      "category": "Contingency",
+      "estimated_cost": 350000.0,
+      "assumption": "A 15% contingency on the preliminary budget to cover unforeseen expenses, delays, or minor scope changes."
+    }
+  ],
+  "total_estimated_cost": 2720000.0,
+  "major_cost_drivers": [
+    "Visual Effects (VFX) due to the complexity and number of required shots (train derailing, figure behind Maya, screen composites).",
+    "Crew salaries, as a professional crew is essential even for a short shoot.",
+    "Location costs, particularly for securing and dressing the apartment in two distinct states, and the challenging Train Station location.",
+    "Vehicle access, specifically for the train sequences, which can be expensive or require elaborate set builds/VFX."
+  ],
+  "budget_risks": [
+    "Complexity and quality expectations for VFX could easily exceed the allocated budget, especially for the train derailing sequence.",
+    "Securing permits and access to a suitable train station or train car can be significantly more expensive or time-consuming than anticipated.",
+    "Potential for additional set dressing or practical effects for the 'ransacked' apartment and flickering lights if VFX is deemed insufficient.",
+    "Availability of key cast and crew for a short, intense shooting schedule might drive up daily rates."
+  ]
+}

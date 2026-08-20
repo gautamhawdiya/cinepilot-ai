@@ -1,0 +1,265 @@
+{
+  "call_sheet_id": "TLF-001",
+  "project_title": "THE LAST FRAME",
+  "production_company": null,
+  "project_manager": "TBD",
+  "date": null,
+  "genre": "Sci-Fi / Mystery",
+  "logline": "A freelance filmmaker discovers a recording from her future self warning her about a deadly train and to distrust her producer, forcing her to confront a pre-determined fate.",
+  "shoot_days_total": 2,
+  "shoot_days": [
+    {
+      "day_number": 1,
+      "date": null,
+      "location": "MAYA'S APARTMENT",
+      "crew_call": "07:00",
+      "first_shot": "09:00",
+      "lunch_break": "13:00 - 14:00",
+      "wrap": "19:00",
+      "scenes_scheduled": [
+        {
+          "scene_number": 1,
+          "heading": "INT. MAYA'S APARTMENT - NIGHT",
+          "summary": "Freelance filmmaker Maya discovers her camera recording a video from her future self, warning her about an event tomorrow and telling her not to trust Daniel.",
+          "estimated_shooting_time": "3.5 hours",
+          "characters_present": [
+            "MAYA"
+          ],
+          "props": [
+            "Old digital camera",
+            "Monitors",
+            "Laptop"
+          ],
+          "vfx_requirements": [
+            "Camera screen displaying 'TOMORROW, 11:47 PM.'",
+            "'LAST FRAME.MOV' video file appearing on laptop desktop",
+            "Playback of 'FUTURE MAYA' footage with altered apartment environment (darker, overturned furniture, shattered window)",
+            "Apartment lights flickering (within recorded footage)",
+            "Figure appearing behind Maya in camera footage"
+          ],
+          "notes": "Ensure monitors and laptop are functional for screen inserts. Coordinate VFX playback for the future footage."
+        },
+        {
+          "scene_number": 2,
+          "heading": "INT. MAYA'S APARTMENT - LATER",
+          "summary": "After seeing the video, Maya receives a message and call from Daniel, who also claims to have seen the video and warns her to destroy the camera, as the apartment lights flicker and the camera begins recording again.",
+          "estimated_shooting_time": "3 hours",
+          "characters_present": [
+            "MAYA",
+            "DANIEL"
+          ],
+          "props": [
+            "Old digital camera",
+            "Phone"
+          ],
+          "vfx_requirements": [
+            "Text message notification from 'DANIEL' on phone",
+            "'RECORDING.' text with red flashing indicator on camera display",
+            "Practical flickering lights, potentially enhanced with VFX"
+          ],
+          "notes": "Plan practical effect for flickering lights. Coordinate phone screen display and camera auto-recording VFX."
+        }
+      ],
+      "cast_on_call": [
+        "MAYA SEN",
+        "DANIEL"
+      ],
+      "crew_on_call": [
+        "Director",
+        "Assistant Director",
+        "Director of Photography",
+        "Gaffer",
+        "Key Grip",
+        "Sound Mixer",
+        "Production Designer",
+        "Wardrobe Stylist",
+        "Hair & Makeup Artist",
+        "VFX Supervisor",
+        "First Assistant Camera",
+        "DIT",
+        "Production Assistant"
+      ],
+      "required_props": [
+        "Old digital camera",
+        "Monitors",
+        "Laptop",
+        "Phone"
+      ],
+      "required_equipment": [
+        "Professional camera package (mirrorless/DSLR cinema kit)",
+        "Versatile lens set",
+        "Compact lighting kit",
+        "Sound recording equipment (boom, lav mics, recorder)",
+        "Tripods/Monopods",
+        "C-stands",
+        "Reflectors",
+        "Computer for DIT"
+      ],
+      "production_notes": [
+        "Engage VFX Supervisor early for all screen inserts and 'Future Maya' environment. Detailed shot breakdown and on-set data collection required for complex VFX. Plan for practical flickering lights in the apartment, with potential VFX enhancement.",
+        "Obtain formal consent and location agreement from property owner/building management for Maya's Apartment. Adhere to all building rules regarding noise, crew size, and working hours."
+      ],
+      "safety_and_logistics": [
+        "Ensure clear pathways within the apartment for equipment and crew. Verify fire exits and emergency procedures. Ensure adequate power for all equipment, including lighting and monitors."
+      ]
+    },
+    {
+      "day_number": 2,
+      "date": null,
+      "location": "TRAIN STATION",
+      "crew_call": "14:00",
+      "first_shot": "16:00",
+      "lunch_break": "20:00 - 21:00",
+      "wrap": "03:00",
+      "scenes_scheduled": [
+        {
+          "scene_number": 3,
+          "heading": "INT. TRAIN STATION - NIGHT",
+          "summary": "Maya waits at a train station at 11:46 PM, camera recording, seeing a figure in its footage. Daniel is on the train and urges her to get off as the camera shows a derailing, and she complies, updating the timeline.",
+          "estimated_shooting_time": "7 hours",
+          "characters_present": [
+            "MAYA",
+            "DANIEL"
+          ],
+          "props": [
+            "Old digital camera",
+            "Phone"
+          ],
+          "vfx_requirements": [
+            "Camera screen displaying '11:46 PM' and 'RECORDING.'",
+            "Live camera feed of train station platform with composite shadowy figure appearing briefly",
+            "Train derailing footage on camera screen (VFX sequence)",
+            "'TIMELINE UPDATED.' text on camera display with bright flash transition",
+            "CUT TO BLACK"
+          ],
+          "notes": "Coordinate exact timing with train schedule for Daniel's shots. VFX team to prepare pre-visualization for train derailing footage. Ensure practical elements for train movement (headlights, steam, brake sparks) are achievable or simulated safely."
+        }
+      ],
+      "cast_on_call": [
+        "MAYA SEN",
+        "DANIEL"
+      ],
+      "crew_on_call": [
+        "Director",
+        "Assistant Director",
+        "Director of Photography",
+        "Gaffer",
+        "Key Grip",
+        "Sound Mixer",
+        "Production Designer",
+        "Wardrobe Stylist",
+        "Hair & Makeup Artist",
+        "VFX Supervisor",
+        "First Assistant Camera",
+        "DIT",
+        "Production Assistant",
+        "Safety Officer"
+      ],
+      "required_props": [
+        "Old digital camera",
+        "Phone"
+      ],
+      "required_equipment": [
+        "Professional camera package (compact/mobile setups preferred)",
+        "Versatile lens set",
+        "Compact lighting kit suitable for night exteriors",
+        "Sound recording equipment (wind protection, adaptable to ambient noise)",
+        "Handheld rigs/monopods",
+        "Walkie-talkies for communication",
+        "Computer for DIT"
+      ],
+      "production_notes": [
+        "Initiate contact with railway authorities immediately for permit applications, lead times, and fee structures. Allocate budget for permit fees, specialized Railroad Protective Liability insurance, and mandatory railway safety personnel/flagmen.",
+        "Prepare for strict limitations on equipment size and usage, crew size, and staging near tracks. Prioritize compact and mobile camera setups. Conduct thorough tech scout with railway representatives.",
+        "Plan for night shoots to minimize disruption, budgeting for associated higher labor costs. Employ dedicated personnel for crowd management and to cordon off filming areas at the station. Confirm filming hours with selected station operator.",
+        "The 'train derailing' will be achieved purely through VFX; no practical derailing is to be attempted."
+      ],
+      "safety_and_logistics": [
+        "Develop a comprehensive safety plan in close collaboration with the selected railway operator and a certified safety officer. All cast and crew must be briefed on and adhere to railway safety protocols.",
+        "Confirm Railroad Protective Liability insurance coverage with railway operator. Confirm all equipment restrictions with the selected location authority. Confirm filming permit requirements with the selected station operator.",
+        "Ensure constant vigilance for active trains. Maintain a safe distance from tracks and platform edges at all times. Establish clear communication channels with station personnel and safety officers.",
+        "Provide adequate warmth and hot beverages for cast and crew during night shoots."
+      ]
+    }
+  ],
+  "cast_list": [
+    {
+      "character_name": "MAYA SEN",
+      "actor_name": "TBD"
+    },
+    {
+      "character_name": "FUTURE MAYA",
+      "actor_name": "TBD"
+    },
+    {
+      "character_name": "DANIEL",
+      "actor_name": "TBD"
+    }
+  ],
+  "crew_list": [
+    {
+      "role": "Director",
+      "name": "TBD"
+    },
+    {
+      "role": "Assistant Director",
+      "name": "TBD"
+    },
+    {
+      "role": "Director of Photography",
+      "name": "TBD"
+    },
+    {
+      "role": "Gaffer",
+      "name": "TBD"
+    },
+    {
+      "role": "Key Grip",
+      "name": "TBD"
+    },
+    {
+      "role": "Sound Mixer",
+      "name": "TBD"
+    },
+    {
+      "role": "Production Designer",
+      "name": "TBD"
+    },
+    {
+      "role": "Wardrobe Stylist",
+      "name": "TBD"
+    },
+    {
+      "role": "Hair & Makeup Artist",
+      "name": "TBD"
+    },
+    {
+      "role": "VFX Supervisor",
+      "name": "TBD"
+    },
+    {
+      "role": "Editor",
+      "name": "TBD"
+    },
+    {
+      "role": "Production Manager",
+      "name": "TBD"
+    },
+    {
+      "role": "First Assistant Camera",
+      "name": "TBD"
+    },
+    {
+      "role": "DIT (Digital Imaging Technician)",
+      "name": "TBD"
+    },
+    {
+      "role": "Production Assistant",
+      "name": "TBD"
+    },
+    {
+      "role": "Safety Officer",
+      "name": "TBD"
+    }
+  ]
+}

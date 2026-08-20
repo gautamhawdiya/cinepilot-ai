@@ -1,5 +1,7 @@
 from google.adk.agents import Agent
 
+from schemas.budget import BudgetAnalysis
+
 
 MODEL = "gemini-2.5-flash"
 
@@ -60,4 +62,5 @@ budget_agent = Agent(
         "from screenplay analysis."
     ),
     instruction=BUDGET_AGENT_INSTRUCTION,
+    output_schema=BudgetAnalysis,
 )

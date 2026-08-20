@@ -1,0 +1,88 @@
+{
+  "research_topic": "Filming in Train Stations",
+  "findings": [
+    {
+      "topic": "Permits and Applications",
+      "finding": "Commercial filming and photography, including student projects, requires a permit. Detailed information, documentation, storyboards, scripts, or briefs must be submitted with the application.",
+      "source_title": "Permits and Station Access | Metro Trains",
+      "source_url": "https://www.metrotrains.com.au/corporate/permits-and-station-access",
+      "production_impact": "The production will need to apply for filming permits well in advance, providing comprehensive project details and potentially a script/storyboard of the train station scene. This will be a critical step in pre-production.",
+      "confidence": "high",
+      "requires_local_verification": true
+    },
+    {
+      "topic": "Insurance Requirements",
+      "finding": "A Public Liability Certificate of Insurance is required, often for a significant amount (e.g., no less than $20M or £5m).",
+      "source_title": "Permits and Station Access | Metro Trains",
+      "source_url": "https://www.metrotrains.com.au/corporate/permits-and-station-access",
+      "production_impact": "The production must secure adequate public liability insurance before filming can commence at any train station. This is a standard but crucial financial and legal requirement.",
+      "confidence": "high",
+      "requires_local_verification": true
+    },
+    {
+      "topic": "Safety and Prohibited Items/Actions",
+      "finding": "Prohibited items/actions include: red, yellow, or green clothing/objects (due to signal colors), entering non-public areas, climbing on or obstructing signals/equipment, crossing yellow lines, obstructing people flow, artificial lighting/reflectors (unless specified in permit), flash photography (can distract drivers), and filming security equipment. Crews must remain alert and aware of surroundings. Equipment on platforms must be weighted or secured.",
+      "source_title": "Permit Terms & Conditions | Metro Trains",
+      "source_url": "https://www.metrotrains.com.au/metro-film-photography-terms-and-conditions/",
+      "production_impact": "This imposes significant constraints on set design, wardrobe, lighting choices, and camera placement. The safety of cast, crew, and the public is paramount, requiring strict adherence to these rules. The scene depicting a train derailing (VFX) will require careful consideration of how it is framed without violating restrictions on filming approaching trains or compromising safety.",
+      "confidence": "high",
+      "requires_local_verification": true
+    },
+    {
+      "topic": "Equipment Restrictions",
+      "finding": "The use of tripods is often restricted or requires explicit permission. Bulky equipment is discouraged as it can cause obstruction. Petrol or diesel generators, or using the station's power supply, may be prohibited; battery-operated equipment is generally preferred.",
+      "source_title": "Permit Terms & Conditions | Metro Trains",
+      "source_url": "https://www.metrotrains.com.au/metro-film-photography-terms-and-conditions/",
+      "production_impact": "The production will need to plan for compact, battery-powered equipment for the train station scene, especially if artificial lighting is needed. This affects equipment rental, power solutions, and camera stability if tripods are disallowed.",
+      "confidence": "high",
+      "requires_local_verification": true
+    },
+    {
+      "topic": "Access and Filming Hours",
+      "finding": "Filming is often not permitted during peak hours (e.g., 7 am-9:30 am and 4:30 pm-6:30 pm for CBD train station exterior pathways). Evenings and weekends may depend on team availability. Ticketed passengers with handheld devices may film but must do so safely and timely.",
+      "source_title": "Filming permits | City of Melbourne",
+      "source_url": "https://www.melbourne.vic.gov.au/filming-permits",
+      "production_impact": "The scene is set at 'INT. TRAIN STATION - NIGHT' at '11:46 PM', which falls outside typical peak hours, potentially making it easier to secure filming times. However, night shoots may still incur higher costs and specific staffing requirements from the railway operator. The production needs to confirm exact permissible hours.",
+      "confidence": "medium",
+      "requires_local_verification": true
+    },
+    {
+      "topic": "Public Interaction and Privacy",
+      "finding": "Filming and photographing passengers in a way that identifies them without consent is generally not permitted. Crews should be mindful of keeping noise to a minimum and not obstructing the flow of people.",
+      "source_title": "Permit Terms & Conditions | Metro Trains",
+      "source_url": "https://www.metrotrains.com.au/metro-film-photography-terms-and-conditions/",
+      "production_impact": "This requires careful shot planning to avoid capturing identifiable members of the public, or obtaining releases if extras are used. Crowd control and clear communication will be necessary to minimize disruption and noise.",
+      "confidence": "high",
+      "requires_local_verification": true
+    },
+    {
+      "topic": "Coordination and Logistics",
+      "finding": "After initial approval, a pre-production walk-through is often required. It's courteous to inform station staff/manager upon arrival. Access to railroad right-of-way or train equipment may require successful advance completion of a Railroad Safety Training course.",
+      "source_title": "Filming Requests | Metrolink",
+      "source_url": "https://metrolinktrains.com/customer-service/filming-requests",
+      "production_impact": "The production team will need to coordinate closely with the train operator for a thorough site visit and potentially allocate time and resources for mandatory safety training for key crew members. This impacts scheduling and budget.",
+      "confidence": "high",
+      "requires_local_verification": true
+    },
+    {
+      "topic": "Filming Approaching Trains",
+      "finding": "Photographing and filming a train approaching the platform is often restricted or not permitted due to safety concerns and potential distraction to train drivers.",
+      "source_title": "Permit Terms & Conditions | Metro Trains",
+      "source_url": "https://www.metrotrains.com.au/metro-film-photography-terms-and-conditions/",
+      "production_impact": "The scene involves an arriving train and a VFX shot of a train derailing. Directly filming an approaching train for dramatic effect may be prohibited. Alternative solutions, such as using stock footage, VFX compositing, or shooting the train in a controlled environment (e.g., a train museum or a green screen stage for the derailing sequence), will need to be explored to achieve the visual without violating safety rules.",
+      "confidence": "medium",
+      "requires_local_verification": true
+    }
+  ],
+  "production_recommendations": [
+    "Identify specific train station locations early in pre-production and contact their respective authorities/operators to understand precise permit requirements, fees, and application timelines.",
+    "Allocate a significant portion of the budget for permits, insurance, potential railway safety training, and any specialized equipment rentals necessitated by restrictions (e.g., compact, battery-powered lighting).",
+    "Engage a dedicated location manager with experience in public transport filming to navigate the complex permit processes and logistical challenges.",
+    "Schedule a comprehensive pre-production walk-through with the train station operator and key crew members (director, DP, 1st AD) to plan shots that adhere to safety regulations, especially concerning yellow lines, equipment placement, and avoiding obstruction.",
+    "Develop a detailed safety plan specifically for the train station sequence, including clear guidelines for cast and crew regarding platform edges, train movements, and emergency procedures.",
+    "Plan for crowd control and public management, even during late-night shoots, to prevent accidental filming of the public and minimize disruption, possibly employing PAs or security personnel.",
+    "Re-evaluate the cinematography plan for the 'train derailing' VFX shot, considering alternatives like controlled studio environments, stock footage, or advanced VFX integration, given potential restrictions on filming approaching trains.",
+    "Ensure all wardrobe choices for Maya and Daniel avoid red, yellow, or green to prevent confusion with railway signals.",
+    "Prepare comprehensive storyboards and detailed shot lists for the train station scene to present to the railway operator for permit approval, demonstrating understanding and compliance with their rules."
+  ]
+}

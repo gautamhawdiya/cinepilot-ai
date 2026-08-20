@@ -1,0 +1,70 @@
+{
+  "currency": "INR",
+  "shoot_days": 2,
+  "categories": [
+    {
+      "category": "Production Crew",
+      "estimated_cost": 250000.0,
+      "assumption": "Covers a core team (Director, DP, 1st AC, Sound, Gaffer, Art Director, MUA, PA) for 2 days, including their rates and basic production coordination. Assumes professional but budget-conscious daily rates."
+    },
+    {
+      "category": "Cast Talent",
+      "estimated_cost": 80000.0,
+      "assumption": "Rates for 2 principal actors (Maya, Daniel) for 2 shooting days, assuming emerging professionals rather than established stars."
+    },
+    {
+      "category": "Locations & Permits",
+      "estimated_cost": 70000.0,
+      "assumption": "Covers rental/permit fees for one interior 'Maya's Apartment' location for 2 days and one exterior 'Train Station' location for 1 day, assuming standard short film rates for such access."
+    },
+    {
+      "category": "Equipment Rental",
+      "estimated_cost": 40000.0,
+      "assumption": "Rental of a basic professional camera package (e.g., mirrorless or DSLR cinema kit, lenses), lighting kit, and sound recording equipment for 2 days."
+    },
+    {
+      "category": "Props & Set Dressing",
+      "estimated_cost": 30000.0,
+      "assumption": "Costs for acquiring/renting specific props (old digital camera, monitors, laptop, phone) and general dressing for Maya's apartment environment."
+    },
+    {
+      "category": "Visual Effects (VFX)",
+      "estimated_cost": 220000.0,
+      "assumption": "Significant budget allocated for complex VFX shots including multiple screen inserts, the 'Future Maya' altered apartment environment (destruction, flickering lights, figure compositing), and the 'train derailing' sequence, requiring professional freelance VFX artist rates."
+    },
+    {
+      "category": "Post-Production (Non-VFX)",
+      "estimated_cost": 80000.0,
+      "assumption": "Covers professional services for editing, sound design, sound mixing, color grading, and licensing for basic music/score, assuming flat rates for a short film."
+    },
+    {
+      "category": "Catering & Craft Services",
+      "estimated_cost": 15000.0,
+      "assumption": "Provides meals, snacks, and beverages for a cast and crew of approximately 12 people for 2 shooting days on location."
+    },
+    {
+      "category": "Transportation & Logistics",
+      "estimated_cost": 15000.0,
+      "assumption": "Covers local travel for crew/equipment, fuel, and minor logistical needs for the 2-day shoot."
+    },
+    {
+      "category": "Contingency",
+      "estimated_cost": 120000.0,
+      "assumption": "An allocation of approximately 15% of the total budget to cover unforeseen expenses, minor adjustments, or unexpected delays during production and post-production."
+    }
+  ],
+  "total_estimated_cost": 920000.0,
+  "major_cost_drivers": [
+    "Visual Effects (VFX) requirements, especially the complex 'Future Maya' environment alteration and 'train derailing' sequence.",
+    "Professional production crew wages for a 2-day shoot, even for a small team.",
+    "Cast talent fees for two principal actors.",
+    "Overall post-production costs, including both VFX and other essential post-production services."
+  ],
+  "budget_risks": [
+    "VFX Complexity & Scope Creep: The high number and complexity of VFX shots (altered apartment, figure, derailing train) pose a significant risk for cost overruns if higher fidelity is required or extensive revisions are needed.",
+    "Location Access & Permits: Securing permits or suitable rental locations for a train station and an apartment within the estimated budget and tight schedule can be challenging.",
+    "Tight Shooting Schedule: A 2-day shoot is very ambitious for a film with multiple VFX requirements and locations. Any unforeseen delays could lead to overtime costs or compromise quality.",
+    "Talent Negotiation: Securing professional crew and cast at the estimated rates for such a short project may require strong negotiation or reliance on emerging talent.",
+    "Technical Glitches: Production delays due to equipment malfunction or on-set issues can quickly consume the contingency budget."
+  ]
+}

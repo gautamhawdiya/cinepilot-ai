@@ -1,0 +1,200 @@
+{
+  "title": "THE LAST FRAME",
+  "visual_style": "Gritty, futuristic neo-noir with high contrast and a muted color palette, emphasizing tension and psychological suspense.",
+  "cinematography_strategy": "A blend of handheld and controlled static shots to convey both immediacy and dread. Close-ups will highlight character emotions and screen content. VFX will be seamlessly integrated to enhance narrative elements and avoid dangerous practical stunts, especially for train sequences.",
+  "scenes": [
+    {
+      "scene_number": 1,
+      "scene_heading": "INT. MAYA'S APARTMENT - NIGHT",
+      "source_scene_summary": "Maya, a freelance filmmaker, discovers her old digital camera mysteriously recorded footage from \"TOMORROW\" showing a future version of herself giving a dire warning.",
+      "visual_goal": "Establish Maya's everyday life before the discovery, then introduce the unsettling nature of the camera's ability and the first glimpse of the future warning.",
+      "shots": [
+        {
+          "shot_number": 1,
+          "scene_number": 1,
+          "screenplay_evidence": "Maya, a freelance filmmaker, discovers her old digital camera mysteriously recorded footage from \"TOMORROW\".",
+          "shot_type": "MEDIUM SHOT",
+          "camera_angle": "EYE-LEVEL",
+          "camera_movement": "STATIC",
+          "subject": "MAYA",
+          "action": "Maya is sitting at her desk, engrossed, with a digital camera and laptop open in front of her. She looks at the camera screen with a mix of confusion and curiosity.",
+          "visual_description": "Maya, 27, focused at her cluttered apartment desk, a vintage-looking digital camera in her hand, a laptop open beside it. Rain is visible through the window.",
+          "lighting": "Low-key, warm practical light from a desk lamp, casting shadows, with soft blue ambient light from outside through a window suggesting night and rain.",
+          "mood": "Introspective, slightly melancholic, building curiosity.",
+          "vfx_required": true,
+          "vfx_notes": "Subtle rain crawling down the window pane for atmosphere. The digital camera screen needs to be composited with a 'recording' indicator and a timestamp.",
+          "image_prompt": "Cinematic medium shot of a young woman, Maya, 27, at her desk in a dimly lit apartment at night. She holds a vintage-style digital camera, her expression a mix of curiosity and slight confusion as she looks at its screen. A laptop is open next to it. Soft, warm light from a desk lamp illuminates her face and hands, creating deep shadows in the background. Rain subtly streaks down the window behind her. Realistic film grain, shallow depth of field. The camera screen shows 'RECORDING' and 'TOMORROW 11:47 AM' with a subtle glowing effect. Sci-fi mystery mood."
+        },
+        {
+          "shot_number": 2,
+          "scene_number": 1,
+          "screenplay_evidence": "her old digital camera mysteriously recorded footage from \"TOMORROW\" showing a future version of herself giving a dire warning.",
+          "shot_type": "CLOSE UP",
+          "camera_angle": "EYE-LEVEL",
+          "camera_movement": "STATIC",
+          "subject": "DIGITAL CAMERA SCREEN",
+          "action": "The camera screen displays the timestamp \"TOMORROW 11:47 AM\" and then begins to show fragmented, glitchy footage.",
+          "visual_description": "A tight close-up on the small, pixelated screen of an old digital camera. The display shows a rapidly changing timestamp, eventually settling on 'TOMORROW 11:47 AM', followed by a flicker of distorted images.",
+          "lighting": "The screen emits a cool, digital glow, contrasting with the warm, dark background of Maya's hand and desk.",
+          "mood": "Eerie, unsettling, technologically mysterious.",
+          "vfx_required": true,
+          "vfx_notes": "Composite accurate digital display showing 'TOMORROW 11:47 AM' with a brief, subtle glitch effect before the footage starts. Ensure screen reflectivity is realistic.",
+          "image_prompt": "Cinematic close up of an old digital camera's small, pixelated LCD screen. The screen glows with a cool, digital light, displaying stark white text: 'TOMORROW 11:47 AM'. Subtle digital glitches and interference effects play across the text and screen. The background is a blurred, dark form of a hand holding the camera, with hints of a warm, out-of-focus desk lamp light. Mysterious, foreboding atmosphere. Sci-fi technology aesthetic."
+        }
+      ]
+    },
+    {
+      "scene_number": 2,
+      "scene_heading": "ON THE LAPTOP SCREEN - VIDEO",
+      "source_scene_summary": "The video shows a future Maya in a ransacked apartment, urgently warning present-day Maya not to go to the station tomorrow, not to take the 11:47 train, and not to trust Daniel.",
+      "visual_goal": "Present the full, shocking message from Future Maya within the context of a destroyed environment, emphasizing the urgency and danger.",
+      "shots": [
+        {
+          "shot_number": 3,
+          "scene_number": 2,
+          "screenplay_evidence": "The video shows a future Maya in a ransacked apartment, urgently warning present-day Maya not to go to the station tomorrow, not to take the 11:47 train, and not to trust Daniel.",
+          "shot_type": "CLOSE UP",
+          "camera_angle": "EYE-LEVEL",
+          "camera_movement": "STATIC",
+          "subject": "LAPTOP SCREEN (FUTURE MAYA)",
+          "action": "The LAPTOP SCREEN shows FUTURE MAYA, disheveled and terrified, speaking directly to the camera from a ruined apartment, delivering her urgent warnings.",
+          "visual_description": "On a laptop screen, FUTURE MAYA, pale and distressed, her hair disheveled, speaks with desperate urgency. Behind her, the apartment is in chaos: furniture overturned, a shattered window, debris scattered. The lighting is dim and flickering.",
+          "lighting": "Harsh, desaturated light, flickering erratically, simulating a failing power source in a disaster zone.",
+          "mood": "Terrified, urgent, chaotic, desperate.",
+          "vfx_required": true,
+          "vfx_notes": "The entire shot is a screen composite onto a laptop display. The background 'ransacked apartment' needs to be a VFX/Set Dressing combination, with broken glass (VFX for safety/control) and overturned furniture. Flickering light effect on screen footage.",
+          "image_prompt": "Cinematic close-up perspective of a laptop screen displaying a video feed. On the screen, a terrified and disheveled woman, 'FUTURE MAYA', stares directly into the camera with wide, desperate eyes, her face pale. She is speaking with extreme urgency. Behind her, a 'ransacked apartment' is visible: overturned furniture, scattered debris, and a visibly shattered window. The lighting within the video feed is harsh, desaturated, and flickers erratically, creating a sense of dread and chaos. The screen's bezel is barely visible, emphasizing the video content. Gritty, urgent, sci-fi mystery."
+        }
+      ]
+    },
+    {
+      "scene_number": 3,
+      "scene_heading": "INT. MAYA'S APARTMENT - LATER",
+      "source_scene_summary": "Maya receives a message and call from Daniel, who reveals he also saw the future video and instructs her to destroy the camera, as the apartment lights flicker and the camera begins recording again.",
+      "visual_goal": "Show Maya's growing paranoia and the immediate escalation of the threat, connecting Daniel to the future video and introducing new camera activity.",
+      "shots": [
+        {
+          "shot_number": 4,
+          "scene_number": 3,
+          "screenplay_evidence": "Maya receives a message and call from Daniel, who reveals he also saw the future video and instructs her to destroy the camera.",
+          "shot_type": "MEDIUM CLOSE UP",
+          "camera_angle": "OVER THE SHOULDER (MAYA)",
+          "camera_movement": "STATIC",
+          "subject": "MAYA and PHONE",
+          "action": "Maya, visibly shaken, holds her phone to her ear, listening to Daniel. Her eyes dart around her apartment, a look of growing suspicion and fear on her face.",
+          "visual_description": "Maya, her face etched with fear and suspicion, listens intently on her phone. The camera catches a glint of the digital camera sitting on her desk in the foreground, slightly out of focus. The apartment lights begin to flicker faintly.",
+          "lighting": "Dim, inconsistent lighting, with the practical lamps in her apartment flickering subtly, heightening the tension.",
+          "mood": "Suspicious, paranoid, tense.",
+          "vfx_required": true,
+          "vfx_notes": "Subtle flickering effect on the apartment lights and practical lamps in the shot.",
+          "image_prompt": "Cinematic medium close up, over Maya's shoulder, as she holds a smartphone to her ear. Her face is in profile, etched with growing fear and suspicion, her eyes darting nervously. Her apartment is dimly lit, and the practical lights within the frame are subtly flickering. In the blurred foreground, on a desk, an old digital camera is visible. The atmosphere is tense and paranoid. Sci-fi mystery lighting."
+        },
+        {
+          "shot_number": 5,
+          "scene_number": 3,
+          "screenplay_evidence": "as the apartment lights flicker and the camera begins recording again.",
+          "shot_type": "CLOSE UP",
+          "camera_angle": "LOW ANGLE",
+          "camera_movement": "PUSH IN (SLOW)",
+          "subject": "DIGITAL CAMERA",
+          "action": "The digital camera on the desk activates, its small red recording light beginning to blink ominously as the apartment lights flicker more intensely.",
+          "visual_description": "A close-up on the digital camera sitting on Maya's desk. The small, red recording indicator light flashes. The ambient light in the room flickers rapidly, casting dancing shadows.",
+          "lighting": "The camera's red light provides a stark, unsettling glow. Rapidly flickering ambient light from the apartment's overhead fixtures.",
+          "mood": "Ominous, foreboding, mechanical threat.",
+          "vfx_required": true,
+          "vfx_notes": "VFX for the red recording light to blink clearly. Rapid flickering of ambient apartment lights needs to be controlled and integrated with practical lights if possible.",
+          "image_prompt": "Cinematic close-up shot of an old digital camera resting on a wooden desk. A small, distinct red recording light on the camera is blinking rhythmically. The entire shot is bathed in rapidly flickering ambient light, casting sharp, dancing shadows across the camera and desk surface. The background is blurred and dark, adding to the sense of isolation. The mood is ominous and unsettling, hinting at an unseen presence. Sci-fi thriller aesthetic."
+        }
+      ]
+    },
+    {
+      "scene_number": 4,
+      "scene_heading": "INT. TRAIN STATION - NIGHT",
+      "source_scene_summary": "At the train station, Maya sees a live recording of herself with a mysterious figure behind her. She boards the train with Daniel, sees a future of the train derailing on her camera, and barely escapes before the train departs, prompting a \"TIMELINE UPDATED.\" message.",
+      "visual_goal": "Create a high-stakes, action-packed sequence within the train station, showcasing the camera's ability to reveal immediate and future dangers, leading to a narrow escape and a timeline shift.",
+      "shots": [
+        {
+          "shot_number": 6,
+          "scene_number": 4,
+          "screenplay_evidence": "At the train station, Maya sees a live recording of herself with a mysterious figure behind her.",
+          "shot_type": "OVER THE SHOULDER (MAYA)",
+          "camera_angle": "EYE-LEVEL",
+          "camera_movement": "STATIC",
+          "subject": "MAYA (back to camera), DIGITAL CAMERA SCREEN, TRAIN STATION",
+          "action": "Maya stands on a bustling train platform, clutching her digital camera. The camera's screen displays a live feed of the platform BEHIND HER, showing HERSELF and, chillingly, a tall, shadowy figure lurking just out of her real-world line of sight.",
+          "visual_description": "Maya, seen from behind, stands amidst the hurried crowd of a train station platform at night. Her digital camera is held up, its screen showing a live, slightly delayed feed of the same platform, but with a shadowy figure discernible behind her. Train lights glint in the background.",
+          "lighting": "Harsh overhead station lighting, casting long shadows. The camera screen provides a small, eerie glow.",
+          "mood": "Anxious, paranoid, a sense of immediate, unseen threat.",
+          "vfx_required": true,
+          "vfx_notes": "The digital camera screen must accurately display a 'live' feed of Maya and the platform, with a mysterious, shadowy figure composited behind Maya within the screen's footage. The figure should be clearly artificial or 'glitchy' to maintain the media boundary.",
+          "image_prompt": "Cinematic over-the-shoulder shot, capturing Maya's back as she stands on a crowded, neon-lit train station platform at night. She holds up an old digital camera, its screen prominently displayed. On the camera screen, a live, slightly delayed, feed of the platform behind Maya is visible. Within this screen footage, a tall, shadowy, indistinct figure is subtly lurking just behind Maya's on-screen self. The real-world platform is bustling, with streaks of train lights in the blurred background. Anxious, paranoid, sci-fi mystery. The screen's content should appear like low-quality digital video."
+        },
+        {
+          "shot_number": 7,
+          "scene_number": 4,
+          "screenplay_evidence": "She boards the train with Daniel",
+          "shot_type": "MEDIUM SHOT",
+          "camera_angle": "LOW ANGLE",
+          "camera_movement": "TRACKING (FORWARD)",
+          "subject": "MAYA and DANIEL",
+          "action": "Maya, looking over her shoulder nervously, is guided onto the train by Daniel, who has a strangely calm demeanor. They push through the boarding crowd.",
+          "visual_description": "Maya and Daniel board a train. Maya is clearly uncomfortable, glancing back towards the platform, while Daniel maintains a composed, almost reassuring, but slightly unsettling expression. The train interior is utilitarian.",
+          "lighting": "Artificial, fluorescent lighting of the train interior, slightly cold.",
+          "mood": "Unease, suspicion, claustrophobia.",
+          "vfx_required": false,
+          "vfx_notes": null,
+          "image_prompt": "Cinematic medium shot, tracking forward, as Maya and Daniel board a train at night. Maya looks over her shoulder with an anxious, suspicious expression, her body language tense. Daniel walks beside her, his face calm but with a subtle, unnerving air. They are pushing through a small crowd of other passengers. The train interior is utilitarian, lit by cold fluorescent lights. Sci-fi mystery, sense of unease."
+        },
+        {
+          "shot_number": 8,
+          "scene_number": 4,
+          "screenplay_evidence": "sees a future of the train derailing on her camera, and barely escapes before the train departs",
+          "shot_type": "CLOSE UP",
+          "camera_angle": "EYE-LEVEL",
+          "camera_movement": "QUICK PAN (TO CAMERA SCREEN)",
+          "subject": "MAYA'S HANDS, DIGITAL CAMERA SCREEN (TRAIN DERAILMENT)",
+          "action": "Maya's hands tightly grip her digital camera. Suddenly, the camera screen glitches and then displays terrifying footage of the train she is on violently derailing, sparks flying. Her eyes widen in horror.",
+          "visual_description": "A rapid pan from Maya's horrified face to a tight close-up on her hands clenching the digital camera. The camera screen, filled with static for a moment, then clearly shows devastating footage of the train derailing, passenger cars twisting off tracks, sparks, and debris.",
+          "lighting": "The train interior's harsh light, contrasted with the chaotic, flashing lights from the derailing footage on the screen.",
+          "mood": "Horror, panic, impending doom.",
+          "vfx_required": true,
+          "vfx_notes": "The train derailing footage is a complex VFX composite onto the camera screen. It needs to look like low-quality, recorded video with appropriate digital artifacts, not a live event. Visuals of twisting metal, sparks, and debris are key.",
+          "image_prompt": "Cinematic close-up, panning quickly from Maya's wide, horrified eyes to her hands tightly clenching an old digital camera. The camera's small screen flickers with static, then displays terrifying, low-quality video footage of a train violently derailing. Passenger cars twist and buckle, sending sparks flying against a dark background of impending chaos. The footage has digital artifacts and a slightly distorted quality. The mood is pure horror and panic. Sci-fi thriller, high urgency."
+        },
+        {
+          "shot_number": 9,
+          "scene_number": 4,
+          "screenplay_evidence": "barely escapes before the train departs",
+          "shot_type": "WIDE SHOT",
+          "camera_angle": "HIGH ANGLE",
+          "camera_movement": "CRANE DOWN",
+          "subject": "MAYA, DANIEL, TRAIN",
+          "action": "Maya shoves past Daniel, scrambling off the train just as its doors hiss shut. Daniel stares after her, a frustrated and dark look on his face. The train begins to pull away.",
+          "visual_description": "From a high angle, Maya bursts out of the train doors and onto the platform, narrowly escaping as the doors close behind her. Daniel is left inside the train, watching her with a glare. The train starts to move, revealing more of the station.",
+          "lighting": "Bright, slightly desaturated station lighting, emphasizing the concrete and steel.",
+          "mood": "Urgency, relief mixed with lingering dread, betrayal.",
+          "vfx_required": true,
+          "vfx_notes": "Ensure seamless integration of any partial train car set piece with green screen backgrounds if a real train station is not used for the wide shot. Digital passengers/crowd enhancement if needed.",
+          "image_prompt": "Cinematic wide shot, from a high crane angle, looking down onto a train station platform at night. Maya scrambles out of a train car just as the doors hiss shut behind her. Daniel is visible inside the train, looking out with a frustrated and dark expression. The train begins to slowly pull away from the platform. The platform is brightly lit, with minimal, blurry background figures. A strong sense of urgency and escape. Sci-fi thriller, high tension."
+        },
+        {
+          "shot_number": 10,
+          "scene_number": 4,
+          "screenplay_evidence": "prompting a \"TIMELINE UPDATED.\" message.",
+          "shot_type": "CLOSE UP",
+          "camera_angle": "EYE-LEVEL",
+          "camera_movement": "STATIC",
+          "subject": "DIGITAL CAMERA SCREEN",
+          "action": "Maya, panting, looks at her camera. The screen flashes, then displays the stark message: \"TIMELINE UPDATED.\"",
+          "visual_description": "A close-up on the digital camera screen. It flashes rapidly with static interference, then settles on a clear, ominous message: \"TIMELINE UPDATED.\"",
+          "lighting": "The screen's digital glow provides the primary light source in the frame, contrasting with the dark, blurry surroundings of Maya's hands and the busy station.",
+          "mood": "Relief, but with a new, unsettling sense of alteration and mystery.",
+          "vfx_required": true,
+          "vfx_notes": "The 'TIMELINE UPDATED.' message needs to be a clear, stark composite on the camera screen, potentially with a sound effect cue.",
+          "image_prompt": "Cinematic close-up of an old digital camera's small, pixelated LCD screen. The screen is filled with a momentary burst of digital static and interference, then clears to display stark white text: 'TIMELINE UPDATED.' The glow from the screen illuminates the edges of blurred fingers holding the camera, with a dark, indistinct background suggesting a busy train station. A mood of stark revelation and unsettling consequence. Sci-fi mystery."
+        }
+      ]
+    }
+  ],
+  "total_shots": 10
+}

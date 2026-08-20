@@ -1,6 +1,7 @@
 from google.adk.agents import LlmAgent
 
 from tools.parallel_search import parallel_search
+from schemas.production_research import ProductionResearch
 
 
 PRODUCTION_RESEARCH_INSTRUCTION = """
@@ -111,4 +112,5 @@ production_research_agent = LlmAgent(
     tools=[
         parallel_search,
     ],
+    output_schema=ProductionResearch,
 )

@@ -1,0 +1,39 @@
+{
+  "project_id": "proj_95cc90532060",
+  "title": "THE LAST FRAME",
+  "screenplay_filename": "sample_screenplay.pdf",
+  "screenplay_path": "C:\\Users\\GautamHawdiya\\source\\repos\\cinepilot-ai\\outputs\\projects\\proj_95cc90532060\\sample_screenplay.pdf",
+  "status": "completed",
+  "current_stage": null,
+  "stages": {
+    "screenplay_analysis": {
+      "status": "completed",
+      "error": null
+    },
+    "budget_analysis": {
+      "status": "completed",
+      "error": null
+    },
+    "production_research": {
+      "status": "completed",
+      "error": null
+    },
+    "production_plan": {
+      "status": "completed",
+      "error": null
+    },
+    "storyboard": {
+      "status": "completed",
+      "error": null
+    },
+    "call_sheet": {
+      "status": "completed",
+      "error": null
+    },
+    "pdf": {
+      "status": "completed",
+      "error": null
+    }
+  },
+  "error": null
+}

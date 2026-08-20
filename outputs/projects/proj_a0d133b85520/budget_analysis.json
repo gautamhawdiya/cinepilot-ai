@@ -1,0 +1,63 @@
+{
+  "currency": "INR",
+  "shoot_days": 2,
+  "categories": [
+    {
+      "category": "Talent (Actors)",
+      "estimated_cost": 115000.0,
+      "assumption": "Rates for lead, supporting, and brief pre-recorded appearance for a short film or web series pilot. Includes Maya Sen, Daniel, and Future Maya."
+    },
+    {
+      "category": "Crew Salaries",
+      "estimated_cost": 373000.0,
+      "assumption": "Lean, experienced core crew for a 2-day shoot, including Director, DoP, 1st AD, Sound Recordist, Gaffer, Key Grip, Art Director, Makeup/Hair, Wardrobe, Production Manager, and PAs. Includes 1-day prep for key crew."
+    },
+    {
+      "category": "Locations & Permits",
+      "estimated_cost": 310000.0,
+      "assumption": "Rental for a practical apartment location (3 days: 1 prep, 2 shoot) and significant permit fees for shooting at a train station platform, which requires special access and potentially security."
+    },
+    {
+      "category": "Equipment Rentals",
+      "estimated_cost": 102000.0,
+      "assumption": "Rental for a mid-range digital cinema camera package, basic lighting, sound, and grip equipment for 3 days (1 prep/pickup, 2 shoot)."
+    },
+    {
+      "category": "Visual Effects (VFX)",
+      "estimated_cost": 480000.0,
+      "assumption": "Comprehensive VFX for screen graphics, flickering lights, 'Future Maya' playback, and the most complex shot: the train derailing. This estimate assumes a moderately complex CGI or heavily manipulated stock footage sequence for the derailment, and includes a VFX supervisor."
+    },
+    {
+      "category": "Art & Props",
+      "estimated_cost": 55000.0,
+      "assumption": "Acquisition or rental of specific props (old digital camera, monitors, laptop, phone) and general set dressing/consumables for Maya's apartment, along with basic wardrobe and makeup/hair consumables."
+    },
+    {
+      "category": "Transportation & Catering",
+      "estimated_cost": 36000.0,
+      "assumption": "Local crew and cast transportation (van/cars) and basic catering for approximately 15 people over 2 shoot days."
+    },
+    {
+      "category": "Post-Production (Non-VFX)",
+      "estimated_cost": 134000.0,
+      "assumption": "Dedicated time for an Editor (5 days), Sound Designer/Mixer (3 days), Colorist (2 days), basic music licensing or composition, and final mastering/deliverables."
+    },
+    {
+      "category": "Contingency",
+      "estimated_cost": 240750.0,
+      "assumption": "A 15% contingency on the total estimated production costs to cover unforeseen expenses, delays, or minor scope changes, which is standard practice in film production."
+    }
+  ],
+  "total_estimated_cost": 1845750.0,
+  "major_cost_drivers": [
+    "Visual Effects (specifically the train derailing sequence)",
+    "Locations & Permits (securing a train station platform and associated fees)",
+    "Crew Salaries (even for a lean crew over multiple days including prep)"
+  ],
+  "budget_risks": [
+    "VFX Complexity: The 'train derailing' effect could exceed the budget if a higher level of photorealism or extensive iterations are required.",
+    "Location Access: Securing permits and shooting at an active train station can be highly challenging, prone to delays, and may incur higher costs due to strict regulations or limited access times.",
+    "Talent Availability/Negotiation: Securing key actors for a short, independent project at the estimated rates might be difficult, potentially necessitating higher fees.",
+    "Logistical Challenges: Any unforeseen delays during the shoot, especially at the train station, due to external factors (e.g., real train schedules, public interference) could lead to overtime and increased expenses."
+  ]
+}

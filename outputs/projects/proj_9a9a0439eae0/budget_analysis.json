@@ -1,0 +1,70 @@
+{
+  "currency": "INR",
+  "shoot_days": 2,
+  "categories": [
+    {
+      "category": "Cast",
+      "estimated_cost": 105000.0,
+      "assumption": "Rates for professional actors for a short film project, covering 1-2 shoot days per actor across the three main roles."
+    },
+    {
+      "category": "Crew",
+      "estimated_cost": 304000.0,
+      "assumption": "Standard daily rates for a lean, professional crew (approx. 10-12 key personnel) for a 2-day short film shoot, covering essential departments like Director, DP, AD, Sound, Gaffer, Grip, Art, HMU, and PAs."
+    },
+    {
+      "category": "Locations",
+      "estimated_cost": 80000.0,
+      "assumption": "Fees for short-term location rentals for Maya's Apartment and necessary permits for filming at a public space like a Train Station."
+    },
+    {
+      "category": "Equipment Rental",
+      "estimated_cost": 100000.0,
+      "assumption": "Rental costs for a professional mid-range camera package, basic lighting, and sound equipment for two shoot days."
+    },
+    {
+      "category": "Props & Art Department",
+      "estimated_cost": 35000.0,
+      "assumption": "Costs for acquiring or renting key props (digital camera, monitors, laptop) and minor set dressing for two locations, plus basic wardrobe for three characters."
+    },
+    {
+      "category": "VFX",
+      "estimated_cost": 220000.0,
+      "assumption": "Estimates for professional VFX artists to create seven distinct effects, including screen replacements (laptop, camera display), subtle environmental effects (flickering lights, rain), and a moderately complex train derailment visualization displayed on a camera screen."
+    },
+    {
+      "category": "Transportation & Logistics",
+      "estimated_cost": 31000.0,
+      "assumption": "Costs for crew/equipment transport (van rental, fuel) and local travel for cast and crew during the shoot days."
+    },
+    {
+      "category": "Catering & Craft Services",
+      "estimated_cost": 50000.0,
+      "assumption": "Providing meals, snacks, and beverages for a crew and cast of approximately 15-20 people for two shoot days."
+    },
+    {
+      "category": "Post-Production",
+      "estimated_cost": 200000.0,
+      "assumption": "Rates for professional post-production services including editing, sound design/mixing, color grading, and basic music licensing/composition."
+    },
+    {
+      "category": "Contingency",
+      "estimated_cost": 170000.0,
+      "assumption": "A standard allocation of approximately 15% of the total estimated budget for unforeseen expenses, delays, or minor adjustments during production and post-production."
+    }
+  ],
+  "total_estimated_cost": 1295000.0,
+  "major_cost_drivers": [
+    "Crew salaries and fees",
+    "Visual Effects (VFX), particularly the train derailment sequence",
+    "Post-Production services (editing, sound, color)",
+    "Location permits and rentals"
+  ],
+  "budget_risks": [
+    "VFX complexity: The 'train derailing' visual, even as a screen display, could exceed estimates if a higher level of detail or realism is required.",
+    "Location access and permits: Securing filming permits for a busy Train Station can be challenging, expensive, or cause delays if not managed properly.",
+    "Overtime: Unforeseen technical issues or creative adjustments during the tight 2-day shoot schedule could lead to unexpected overtime costs for crew.",
+    "Talent negotiations: If more experienced or in-demand actors are pursued, cast costs could increase.",
+    "Post-production scope creep: Additional rounds of revisions for VFX, editing, or sound could extend timelines and incur extra costs."
+  ]
+}

@@ -1,0 +1,87 @@
+{
+  "title": "THE LAST FRAME",
+  "genre": "Sci-Fi / Mystery",
+  "logline": "A freelance filmmaker discovers a recording from her future self warning of a train disaster and a betrayal, forcing her to decide if she can alter her predetermined fate.",
+  "characters": [
+    {
+      "name": "MAYA SEN",
+      "description": "A 27-year-old freelance filmmaker, the protagonist who discovers a mysterious recording from her future self."
+    },
+    {
+      "name": "FUTURE MAYA",
+      "description": "A terrified, future version of Maya, seen only in a video recording, delivering cryptic warnings."
+    },
+    {
+      "name": "DANIEL",
+      "description": "A producer who appears to be aware of the future events and provides Maya with advice."
+    }
+  ],
+  "locations": [
+    "Maya's Apartment",
+    "Train Station Platform"
+  ],
+  "props": [
+    "Old digital camera",
+    "Three monitors",
+    "Laptop",
+    "Phone"
+  ],
+  "vehicles": [
+    "Train"
+  ],
+  "vfx_requirements": [
+    "Camera recording light turning on/off",
+    "Screen graphics (timestamps, filenames, 'TIMELINE UPDATED.')",
+    "Video playback of 'Future Maya' in a dilapidated apartment",
+    "Apartment lights flickering",
+    "Camera footage showing a mysterious figure behind Maya",
+    "Camera footage showing a train derailing"
+  ],
+  "scenes": [
+    {
+      "scene_number": 1,
+      "heading": "INT. MAYA'S APARTMENT - NIGHT",
+      "location": "Maya's Apartment",
+      "time_of_day": "Night",
+      "characters": [
+        "MAYA SEN",
+        "FUTURE MAYA"
+      ],
+      "summary": "Maya, a freelance filmmaker, discovers her old digital camera has mysteriously recorded a video from her future self, warning her about an upcoming event and a person named Daniel."
+    },
+    {
+      "scene_number": 2,
+      "heading": "INT. MAYA'S APARTMENT - LATER",
+      "location": "Maya's Apartment",
+      "time_of_day": "Night",
+      "characters": [
+        "MAYA SEN"
+      ],
+      "summary": "Maya, disturbed by the video, paces her apartment and considers calling Daniel."
+    },
+    {
+      "scene_number": 3,
+      "heading": "INT. MAYA'S APARTMENT - LATER",
+      "location": "Maya's Apartment",
+      "time_of_day": "Night",
+      "characters": [
+        "MAYA SEN",
+        "DANIEL"
+      ],
+      "summary": "Daniel contacts Maya, revealing he also saw the future video and urges her to destroy the camera, as the apartment lights flicker and the camera begins recording again."
+    },
+    {
+      "scene_number": 4,
+      "heading": "INT. TRAIN STATION - NIGHT",
+      "location": "Train Station Platform",
+      "time_of_day": "Night",
+      "characters": [
+        "MAYA SEN",
+        "DANIEL"
+      ],
+      "summary": "Maya is at the train station at 11:46 PM, where her camera records a figure behind her and then shows the train derailing. Daniel, from inside the arriving train, urges her to get off before the doors close."
+    }
+  ],
+  "scene_count": 4,
+  "estimated_shoot_days": 2
+}

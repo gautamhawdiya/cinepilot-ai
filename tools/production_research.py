@@ -71,7 +71,7 @@ def research_production_resources(
             ]
         ):
             queries.append(
-                f"{prop} film equipment rental Mumbai Pune"
+                f"{prop} film equipment rental"
             )
 
     # ------------------------------------------------------------
@@ -86,11 +86,14 @@ def research_production_resources(
     # Keep the initial search bounded.
     queries = queries[:8]
 
+    location_context = ", ".join(screenplay.locations) if screenplay.locations else "location not specified"
+
     objective = (
         "Find real-world production resources for the "
         f"screenplay '{screenplay.title}'. "
+        f"Relevant screenplay locations: {location_context}. "
         "Focus on filming locations, production equipment, "
-        "and VFX resources in India, especially Mumbai and Pune. "
+        "and VFX resources relevant to those locations when available. "
         "Return factual information from available sources. "
         "Do not invent prices."
     )

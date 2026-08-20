@@ -1,0 +1,68 @@
+{
+  "research_topic": "Production constraints for filming in a train station and residential apartment.",
+  "findings": [
+    {
+      "topic": "Filming Permits and Station Access (General)",
+      "finding": "Commercial filming and photography, including student projects, at train stations typically requires a permit. Applications need to be made in advance, sometimes several weeks prior to the shoot date. Some activities, such as community events or general public photography with handheld devices, may not require a permit. However, any activity disrupting staff, passengers, or tenants will likely require authorization.",
+      "source_title": "Permits and Station Access | Metro Trains; Photography & Filming | Chicago Union Station; Filming and photography permits | Deutsche Bahn; Filming & Photography | New Jersey Public Transportation Corporation",
+      "source_url": "https://www.metrotrains.com.au/corporate/permits-and-station-access; https://chicagounionstation.com/private-events/personal-commercial; https://www.deutschebahn.com/en/presse/press_services/filmingpermit-6934168; https://www.njtransit.com/locations",
+      "production_impact": "The production must factor in significant lead time for permit applications. Budgeting for permit fees is also necessary. Failure to obtain permits can lead to legal issues, fines, and immediate cessation of filming. The need for permits applies even if the intent is to capture general public atmosphere.",
+      "confidence": "high",
+      "requires_local_verification": true
+    },
+    {
+      "topic": "Filming Restrictions (Equipment and Activity)",
+      "finding": "Railway operators impose strict restrictions on equipment and activities. Prohibited items/actions often include: drones, obstructing pedestrian flow or tactile pathways, using artificial lighting or reflectors (especially on platforms without explicit approval), climbing on equipment, crossing the yellow line on platforms, and photographing/filming identifiable passengers without consent. The use of tripods is often restricted unless specified in the approved permit. Equipment on platforms must be secured.",
+      "source_title": "Permit Terms & Conditions | Metro Trains; Amtrak Corporate Guidelines on Photography and Video Recording",
+      "source_url": "https://www.metrotrains.com.au/permit-terms-conditions; https://www.amtrak.com/photography-video-recording-policy",
+      "production_impact": "The screenplay's 'found footage' style involving a digital camera might simplify some equipment restrictions, but more complex shots, especially with additional lighting or specialized camera rigs, will be challenging. The scene showing Maya seeing a live recording of herself with a figure behind her, or the train derailing footage, could require specific camera placements that might conflict with these rules. Capturing public reactions or crowd scenes without infringing on privacy will be difficult.",
+      "confidence": "high",
+      "requires_local_verification": true
+    },
+    {
+      "topic": "Safety Requirements",
+      "finding": "Filming near or on active railway property requires stringent safety protocols. This includes mandatory safety briefings for all crew members, and potentially requiring railroad safety training, especially for access to equipment or the railroad right-of-way. Metro Trains specifies rules against disrupting staff or passengers and mandates that equipment on platforms be weighted or secured to prevent movement.",
+      "source_title": "Filming Requests | Metrolink; Permit Terms & Conditions | Metro Trains",
+      "source_url": "https://metrolinktrains.com/customer-service/filming-requests/; https://www.metrotrains.com.au/permit-terms-conditions",
+      "production_impact": "The safety of the cast and crew, especially during scenes involving a moving train or platform activity, is paramount. This necessitates hiring a dedicated safety officer and adhering to all railway-specific safety training, which adds to the budget and production schedule. The scene with the train derailing footage, even if VFX, still implies proximity to train operations for the live-action elements.",
+      "confidence": "high",
+      "requires_local_verification": true
+    },
+    {
+      "topic": "Filming Hours and Public Access",
+      "finding": "Some train stations have specific time windows when filming is not permitted, especially during peak commuter hours (e.g., 7 am-9:30 am and 4:30 pm-6:30 pm in CBD train station exteriors in Melbourne). Metro Trains manages all non-commercial requests for specific Metro Tunnel Stations.",
+      "source_title": "Filming permits | City of Melbourne; Permits and Station Access | Metro Trains",
+      "source_url": "https://www.melbourne.vic.gov.au/filming-permits; https://www.metrotrains.com.au/corporate/permits-and-station-access",
+      "production_impact": "The 'NIGHT' setting for the train station scene might align with off-peak hours, potentially offering more flexibility, but early morning or late evening peak periods must be avoided. This could influence the specific time of night the scene is shot and potentially extend the production day to align with available windows.",
+      "confidence": "medium",
+      "requires_local_verification": true
+    },
+    {
+      "topic": "Insurance Requirements",
+      "finding": "All railway operators (e.g., NJ TRANSIT, Metrolink) consistently require comprehensive liability insurance coverage before granting filming permits. A Right-of-Entry Permit from Metrolink also requires insurance.",
+      "source_title": "Filming & Photography | New Jersey Public Transportation Corporation; Filming Requests | Metrolink",
+      "source_url": "https://www.njtransit.com/locations; https://metrolinktrains.com/customer-service/filming-requests/",
+      "production_impact": "Securing adequate and specific insurance for filming on railway property is a non-negotiable requirement and a significant budget item. The production must ensure its insurance policy meets the specific demands of the railway operator.",
+      "confidence": "high",
+      "requires_local_verification": true
+    },
+    {
+      "topic": "Production Logistics and Oversight",
+      "finding": "Operators often require a pre-production walk-through to understand the station and train equipment. They may also review the overall film production concept in advance. Metro Trains will not accept responsibility for damage or loss of equipment.",
+      "source_title": "Filming Requests | Metrolink; Permit Terms & Conditions | Metro Trains",
+      "source_url": "https://metrolinktrains.com/customer-service/filming-requests/; https://www.metrotrains.com.au/permit-terms-conditions",
+      "production_impact": "Close collaboration with the railway operator's representatives is crucial. This involves dedicated personnel to manage communication and logistics, adding to the production's administrative burden and requiring flexibility for site visits and concept approvals. The production needs to ensure all equipment is secure and insured against damage or loss.",
+      "confidence": "high",
+      "requires_local_verification": true
+    }
+  ],
+  "production_recommendations": [
+    "Prioritize early engagement with railway authorities to understand specific permit requirements, lead times, and associated costs.",
+    "Develop a detailed safety plan for the train station scene, including a dedicated safety officer and potentially railway-specific safety training for key crew members.",
+    "Carefully plan camera movements and equipment usage to comply with restrictions on tripods, lighting, and yellow line rules on platforms.",
+    "Consider alternative filming methods (e.g., green screen for train interiors/derailment, VFX for background crowds) to reduce on-location complexity and safety risks.",
+    "Budget for comprehensive liability insurance that specifically covers filming on railway property.",
+    "Schedule train station filming during off-peak hours to minimize disruption and potentially gain more access flexibility.",
+    "Prepare a clear production concept and script breakdown for review by railway operators during the permit application process."
+  ]
+}
