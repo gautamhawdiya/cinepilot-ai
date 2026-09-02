@@ -1,13 +1,40 @@
 from pathlib import Path
 
+from schemas.budget import BudgetAnalysis
+from schemas.call_sheet import CallSheet
 from schemas.production_plan import ProductionPlan
 from schemas.production_research import ProductionResearch
+from schemas.screenplay import ScreenplayAnalysis
 from schemas.storyboard import Storyboard
 
 
 PROJECT_OUTPUT_ROOT = (
     Path(__file__).resolve().parents[2] / "outputs" / "projects"
 )
+
+
+def load_screenplay_analysis(project_id: str) -> ScreenplayAnalysis:
+    """Load and validate a project's persisted screenplay analysis."""
+    screenplay_path = (
+        PROJECT_OUTPUT_ROOT / project_id / "screenplay_analysis.json"
+    )
+    if not screenplay_path.is_file():
+        raise FileNotFoundError(screenplay_path)
+
+    return ScreenplayAnalysis.model_validate_json(
+        screenplay_path.read_text(encoding="utf-8")
+    )
+
+
+def load_budget_analysis(project_id: str) -> BudgetAnalysis:
+    """Load and validate a project's persisted budget analysis."""
+    budget_path = PROJECT_OUTPUT_ROOT / project_id / "budget_analysis.json"
+    if not budget_path.is_file():
+        raise FileNotFoundError(budget_path)
+
+    return BudgetAnalysis.model_validate_json(
+        budget_path.read_text(encoding="utf-8")
+    )
 
 
 def load_production_research(project_id: str) -> ProductionResearch:
@@ -43,3 +70,23 @@ def load_storyboard(project_id: str) -> Storyboard:
     return Storyboard.model_validate_json(
         storyboard_path.read_text(encoding="utf-8")
     )
+
+
+def load_call_sheet(project_id: str) -> CallSheet:
+    """Load and validate a project's persisted call sheet."""
+    call_sheet_path = PROJECT_OUTPUT_ROOT / project_id / "call_sheet.json"
+    if not call_sheet_path.is_file():
+        raise FileNotFoundError(call_sheet_path)
+
+    return CallSheet.model_validate_json(
+        call_sheet_path.read_text(encoding="utf-8")
+    )
+
+
+def get_call_sheet_pdf_path(project_id: str) -> Path:
+    """Return the path to a project's existing call sheet PDF."""
+    pdf_path = PROJECT_OUTPUT_ROOT / project_id / "call_sheet.pdf"
+    if not pdf_path.is_file():
+        raise FileNotFoundError(pdf_path)
+
+    return pdf_path

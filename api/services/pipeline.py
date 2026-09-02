@@ -159,10 +159,64 @@ Return ONLY valid JSON matching the ProductionResearch output contract.
 
         budget_task = _run_agent(budget_agent, budget_prompt, f"{project_id}-budget")
         research_task = _run_agent(production_research_agent, research_prompt, f"{project_id}-research")
-        budget_text, research_text = await asyncio.gather(budget_task, research_task)
+        budget_text, research_text = await asyncio.gather(
+            budget_task, research_task, return_exceptions=True
+        )
 
-        budget = BudgetAnalysis.model_validate_json(_clean_json(budget_text))
-        research = ProductionResearch.model_validate_json(_clean_json(research_text))
+        budget_error: Exception | None = (
+            budget_text if isinstance(budget_text, Exception) else None
+        )
+        research_error: Exception | None = (
+            research_text if isinstance(research_text, Exception) else None
+        )
+
+        budget: BudgetAnalysis | None = None
+        if budget_error is None:
+            try:
+                budget = BudgetAnalysis.model_validate_json(_clean_json(budget_text))
+            except Exception as exc:
+                budget_error = exc
+
+        research: ProductionResearch | None = None
+        if research_error is None:
+            try:
+                research = ProductionResearch.model_validate_json(_clean_json(research_text))
+            except Exception as exc:
+                research_error = exc
+
+        # These two stages share no ordering, so a failure in either must be
+        # attributed to the stage that actually failed, and the sibling must
+        # not be left stuck at "running" forever just because the pipeline
+        # aborts before it gets a chance to reach "completed".
+        if budget_error is not None or research_error is not None:
+            if budget_error is not None:
+                _set_stage(project, "budget_analysis", StageStatus.FAILED, str(budget_error))
+            else:
+                _set_stage(
+                    project,
+                    "budget_analysis",
+                    StageStatus.FAILED,
+                    "Aborted: production_research failed.",
+                )
+
+            if research_error is not None:
+                _set_stage(project, "production_research", StageStatus.FAILED, str(research_error))
+            else:
+                _set_stage(
+                    project,
+                    "production_research",
+                    StageStatus.FAILED,
+                    "Aborted: budget_analysis failed.",
+                )
+
+            project.current_stage = None
+            project.status = ProjectStatus.FAILED
+            project.error = "; ".join(
+                str(err) for err in (budget_error, research_error) if err is not None
+            )
+            project_store.update(project)
+            return
+
         research_json = research.model_dump_json(indent=2)
 
         (output_dir / "budget_analysis.json").write_text(

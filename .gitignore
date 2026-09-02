@@ -4,3 +4,9 @@ __pycache__/
 *.pyc
 .vscode/
 .idea/
+
+# Generated pipeline artifacts (project-scoped outputs, legacy global outputs,
+# and standalone storyboard image renders). Not source; regenerated per run.
+outputs/projects/*
+outputs/production/*
+outputs/storyboards/*

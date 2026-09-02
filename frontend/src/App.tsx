@@ -23,6 +23,49 @@ type Project = {
   error: string | null;
 };
 
+type ScreenplayCharacter = {
+  name: string;
+  description: string;
+};
+
+type ScreenplayScene = {
+  scene_number: number;
+  heading: string;
+  location: string;
+  time_of_day: string;
+  characters: string[];
+  summary: string;
+};
+
+type ScreenplayAnalysis = {
+  title: string;
+  genre: string;
+  logline: string;
+  characters: ScreenplayCharacter[];
+  locations: string[];
+  props: string[];
+  vehicles: string[];
+  vfx_requirements: string[];
+  scenes: ScreenplayScene[];
+  scene_count: number;
+  estimated_shoot_days: number;
+};
+
+type BudgetCategory = {
+  category: string;
+  estimated_cost: number;
+  assumption: string;
+};
+
+type BudgetAnalysis = {
+  currency: string;
+  shoot_days: number;
+  categories: BudgetCategory[];
+  total_estimated_cost: number;
+  major_cost_drivers: string[];
+  budget_risks: string[];
+};
+
 type ResearchFinding = {
   topic: string;
   finding: string;
@@ -101,7 +144,55 @@ type Storyboard = {
   total_shots: number;
 };
 
-type OutputView = "research" | "plan" | "storyboard";
+type CallSheetScene = {
+  scene_number: number;
+  heading: string;
+  summary: string;
+  estimated_shooting_time: string | null;
+  characters_present: string[];
+  props: string[];
+  vfx_requirements: string[];
+  notes: string | null;
+};
+
+type CallSheetShootDay = {
+  day_number: number;
+  date: string | null;
+  location: string;
+  crew_call: string | null;
+  first_shot: string | null;
+  lunch_break: string | null;
+  wrap: string | null;
+  scenes_scheduled: CallSheetScene[];
+  cast_on_call: string[];
+  crew_on_call: string[];
+  required_props: string[];
+  required_equipment: string[];
+  production_notes: string[];
+  safety_and_logistics: string[];
+};
+
+type CallSheet = {
+  call_sheet_id: string;
+  project_title: string;
+  production_company: string | null;
+  project_manager: string;
+  date: string | null;
+  genre: string | null;
+  logline: string | null;
+  shoot_days_total: number;
+  shoot_days: CallSheetShootDay[];
+  cast_list: Array<{ character_name: string; actor_name: string }>;
+  crew_list: Array<{ role: string; name: string }>;
+};
+
+type OutputView =
+  | "screenplay"
+  | "budget"
+  | "research"
+  | "plan"
+  | "storyboard"
+  | "call-sheet";
 
 const extractSourceUrls = (value: string) =>
   value.match(/https?:\/\/[^,;\s]+/g) ?? [];
@@ -116,6 +207,12 @@ const sourceLabel = (url: string) => {
 
 const formatNumber = (value: number) => String(value).padStart(2, "0");
 
+const callSheetValue = (value: string | null) =>
+  value?.trim() || "Not provided";
+
+const callSheetDate = (value: string | null) =>
+  value?.trim() || "Date not assigned";
+
 const STAGE_LABELS: Record<string, string> = {
   screenplay_analysis: "Screenplay Analysis",
   budget_analysis: "Budget Analysis",
@@ -124,6 +221,19 @@ const STAGE_LABELS: Record<string, string> = {
   storyboard: "Storyboard",
   call_sheet: "Call Sheet",
   pdf: "PDF",
+};
+
+// Which Google ADK agent (Gemini 2.5 Flash) executes each stage, and which
+// tool it calls. Reflects the fixed pipeline wiring in
+// api/services/pipeline.py — not a live execution trace.
+const STAGE_AGENTS: Record<string, string> = {
+  screenplay_analysis: "script_agent",
+  budget_analysis: "budget_agent",
+  production_research: "production_research_agent · Parallel Search",
+  production_plan: "production_plan_agent",
+  storyboard: "storyboard_agent",
+  call_sheet: "call_sheet_agent",
+  pdf: "Deterministic renderer (no LLM call)",
 };
 
 const STAGE_ORDER = [
@@ -141,6 +251,15 @@ function App() {
   const [project, setProject] = useState<Project | null>(null);
   const [isCreating, setIsCreating] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [screenplay, setScreenplay] =
+    useState<ScreenplayAnalysis | null>(null);
+  const [isScreenplayLoading, setIsScreenplayLoading] = useState(false);
+  const [screenplayError, setScreenplayError] = useState<string | null>(
+    null,
+  );
+  const [budget, setBudget] = useState<BudgetAnalysis | null>(null);
+  const [isBudgetLoading, setIsBudgetLoading] = useState(false);
+  const [budgetError, setBudgetError] = useState<string | null>(null);
   const [research, setResearch] =
     useState<ProductionResearch | null>(null);
   const [isResearchLoading, setIsResearchLoading] =
@@ -154,8 +273,11 @@ function App() {
   const [storyboard, setStoryboard] = useState<Storyboard | null>(null);
   const [isStoryboardLoading, setIsStoryboardLoading] = useState(false);
   const [storyboardError, setStoryboardError] = useState<string | null>(null);
+  const [callSheet, setCallSheet] = useState<CallSheet | null>(null);
+  const [isCallSheetLoading, setIsCallSheetLoading] = useState(false);
+  const [callSheetError, setCallSheetError] = useState<string | null>(null);
   const [activeOutput, setActiveOutput] =
-    useState<OutputView>("research");
+    useState<OutputView>("screenplay");
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -202,6 +324,98 @@ function App() {
 
     let cancelled = false;
 
+    const loadScreenplay = async () => {
+      setIsScreenplayLoading(true);
+      setScreenplayError(null);
+
+      try {
+        const response = await fetch(
+          `${API_BASE}/api/projects/${project.project_id}/screenplay`,
+        );
+
+        if (!response.ok) {
+          throw new Error("Unable to load the screenplay analysis.");
+        }
+
+        const result: ScreenplayAnalysis = await response.json();
+        if (!cancelled) {
+          setScreenplay(result);
+        }
+      } catch (err) {
+        if (!cancelled) {
+          setScreenplayError(
+            err instanceof Error
+              ? err.message
+              : "Unable to load the screenplay analysis.",
+          );
+        }
+      } finally {
+        if (!cancelled) {
+          setIsScreenplayLoading(false);
+        }
+      }
+    };
+
+    void loadScreenplay();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [project?.project_id, isCompleted]);
+
+  useEffect(() => {
+    if (!project?.project_id || !isCompleted) {
+      return;
+    }
+
+    let cancelled = false;
+
+    const loadBudget = async () => {
+      setIsBudgetLoading(true);
+      setBudgetError(null);
+
+      try {
+        const response = await fetch(
+          `${API_BASE}/api/projects/${project.project_id}/budget`,
+        );
+
+        if (!response.ok) {
+          throw new Error("Unable to load the budget analysis.");
+        }
+
+        const result: BudgetAnalysis = await response.json();
+        if (!cancelled) {
+          setBudget(result);
+        }
+      } catch (err) {
+        if (!cancelled) {
+          setBudgetError(
+            err instanceof Error
+              ? err.message
+              : "Unable to load the budget analysis.",
+          );
+        }
+      } finally {
+        if (!cancelled) {
+          setIsBudgetLoading(false);
+        }
+      }
+    };
+
+    void loadBudget();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [project?.project_id, isCompleted]);
+
+  useEffect(() => {
+    if (!project?.project_id || !isCompleted) {
+      return;
+    }
+
+    let cancelled = false;
+
     const loadResearch = async () => {
       setIsResearchLoading(true);
       setResearchError(null);
@@ -237,6 +451,52 @@ function App() {
     };
 
     void loadResearch();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [project?.project_id, isCompleted]);
+
+  useEffect(() => {
+    if (!project?.project_id || !isCompleted) {
+      return;
+    }
+
+    let cancelled = false;
+
+    const loadCallSheet = async () => {
+      setIsCallSheetLoading(true);
+      setCallSheetError(null);
+
+      try {
+        const response = await fetch(
+          `${API_BASE}/api/projects/${project.project_id}/call-sheet`,
+        );
+
+        if (!response.ok) {
+          throw new Error("Unable to load the production call sheet.");
+        }
+
+        const result: CallSheet = await response.json();
+        if (!cancelled) {
+          setCallSheet(result);
+        }
+      } catch (err) {
+        if (!cancelled) {
+          setCallSheetError(
+            err instanceof Error
+              ? err.message
+              : "Unable to load the production call sheet.",
+          );
+        }
+      } finally {
+        if (!cancelled) {
+          setIsCallSheetLoading(false);
+        }
+      }
+    };
+
+    void loadCallSheet();
 
     return () => {
       cancelled = true;
@@ -418,6 +678,12 @@ function App() {
     setFile(null);
     setProject(null);
     setError(null);
+    setScreenplay(null);
+    setScreenplayError(null);
+    setIsScreenplayLoading(false);
+    setBudget(null);
+    setBudgetError(null);
+    setIsBudgetLoading(false);
     setResearch(null);
     setResearchError(null);
     setIsResearchLoading(false);
@@ -427,6 +693,9 @@ function App() {
     setStoryboard(null);
     setStoryboardError(null);
     setIsStoryboardLoading(false);
+    setCallSheet(null);
+    setCallSheetError(null);
+    setIsCallSheetLoading(false);
     setActiveOutput("research");
 
     if (fileInputRef.current) {
@@ -656,10 +925,10 @@ function App() {
 
                       <div className="stage-status">
                         {status === "completed" &&
-                          "Completed"}
+                          `Completed · ${STAGE_AGENTS[stage]}`}
 
                         {status === "running" &&
-                          "Processing"}
+                          `Processing · ${STAGE_AGENTS[stage]}`}
 
                         {status === "pending" &&
                           "Waiting"}
@@ -719,6 +988,20 @@ function App() {
                 aria-label="Production outputs"
               >
                 <button
+                  className={activeOutput === "screenplay" ? "active" : ""}
+                  onClick={() => setActiveOutput("screenplay")}
+                  type="button"
+                >
+                  Screenplay Analysis
+                </button>
+                <button
+                  className={activeOutput === "budget" ? "active" : ""}
+                  onClick={() => setActiveOutput("budget")}
+                  type="button"
+                >
+                  Budget
+                </button>
+                <button
                   className={activeOutput === "research" ? "active" : ""}
                   onClick={() => setActiveOutput("research")}
                   type="button"
@@ -739,7 +1022,265 @@ function App() {
                 >
                   Storyboard
                 </button>
+                <button
+                  className={activeOutput === "call-sheet" ? "active" : ""}
+                  onClick={() => setActiveOutput("call-sheet")}
+                  type="button"
+                >
+                  Call Sheet
+                </button>
               </nav>
+            )}
+
+            {isCompleted && activeOutput === "screenplay" && (
+              <section className="research-section" id="screenplay-analysis">
+                <div className="research-header">
+                  <div>
+                    <div className="eyebrow">
+                      SCREENPLAY INTELLIGENCE
+                    </div>
+                    <h2>Screenplay Analysis</h2>
+                    <p>
+                      What the Screenplay Agent extracted directly from the
+                      uploaded PDF — the foundation every downstream stage
+                      builds on.
+                    </p>
+                  </div>
+                </div>
+
+                {isScreenplayLoading && (
+                  <div className="research-state">
+                    Loading the screenplay analysis...
+                  </div>
+                )}
+
+                {screenplayError && (
+                  <div className="error-message large">
+                    {screenplayError}
+                  </div>
+                )}
+
+                {screenplay && (
+                  <>
+                    <div className="plan-summary">
+                      <div className="plan-title-block">
+                        <span>Title</span>
+                        <h3>{screenplay.title}</h3>
+                      </div>
+                      <div>
+                        <span>Genre</span>
+                        <strong>{screenplay.genre || "Unspecified"}</strong>
+                      </div>
+                      <div>
+                        <span>Scenes</span>
+                        <strong>{screenplay.scene_count}</strong>
+                      </div>
+                      <div>
+                        <span>Est. shoot days</span>
+                        <strong>{screenplay.estimated_shoot_days}</strong>
+                      </div>
+                    </div>
+
+                    <article className="overall-strategy-card">
+                      <span>Logline</span>
+                      <p>{screenplay.logline || "No logline extracted."}</p>
+                    </article>
+
+                    <div className="strategy-grid">
+                      {[
+                        ["Locations", screenplay.locations],
+                        ["Props", screenplay.props],
+                        ["Vehicles", screenplay.vehicles],
+                      ].map(([title, items]) => (
+                        <article className="strategy-card" key={title as string}>
+                          <h3>{title as string}</h3>
+                          <ol>
+                            {(items as string[]).length > 0 ? (
+                              (items as string[]).map((item, index) => (
+                                <li key={`${title}-${index}`}>{item}</li>
+                              ))
+                            ) : (
+                              <li>None identified</li>
+                            )}
+                          </ol>
+                        </article>
+                      ))}
+                    </div>
+
+                    {screenplay.vfx_requirements.length > 0 && (
+                      <div className="plan-subsection">
+                        <div className="subsection-heading">
+                          <span>Visual effects</span>
+                          <h3>VFX Requirements</h3>
+                        </div>
+                        <div className="resource-grid">
+                          {screenplay.vfx_requirements.map((item, index) => (
+                            <article className="resource-card" key={`${index}-${item}`}>
+                              <p>{item}</p>
+                            </article>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    <div className="plan-subsection">
+                      <div className="subsection-heading">
+                        <span>Cast</span>
+                        <h3>Characters</h3>
+                      </div>
+                      <div className="resource-grid">
+                        {screenplay.characters.map((character, index) => (
+                          <article
+                            className="resource-card"
+                            key={`${character.name}-${index}`}
+                          >
+                            <span className="resource-type">
+                              {character.name}
+                            </span>
+                            <p>
+                              {character.description ||
+                                "No description extracted."}
+                            </p>
+                          </article>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div className="plan-subsection">
+                      <div className="subsection-heading">
+                        <span>Structure</span>
+                        <h3>Scenes</h3>
+                      </div>
+                      <div className="resource-grid">
+                        {screenplay.scenes.map((scene) => (
+                          <article
+                            className="resource-card"
+                            key={scene.scene_number}
+                          >
+                            <span className="resource-type">
+                              Scene {formatNumber(scene.scene_number)}
+                            </span>
+                            <p>{scene.heading}</p>
+                            <div className="resource-evidence">
+                              <span>
+                                {[scene.location, scene.time_of_day]
+                                  .filter(Boolean)
+                                  .join(" · ") || "Location not specified"}
+                              </span>
+                              <p>
+                                {scene.summary || "No summary extracted."}
+                              </p>
+                            </div>
+                          </article>
+                        ))}
+                      </div>
+                    </div>
+                  </>
+                )}
+              </section>
+            )}
+
+            {isCompleted && activeOutput === "budget" && (
+              <section className="plan-section" id="budget-analysis">
+                <div className="plan-header">
+                  <div>
+                    <div className="eyebrow">
+                      PRELIMINARY COST ESTIMATE
+                    </div>
+                    <h2>Budget Analysis</h2>
+                    <p>
+                      A planning-stage budget derived from the screenplay
+                      analysis alone — not vendor-quoted pricing.
+                    </p>
+                  </div>
+                </div>
+
+                {isBudgetLoading && (
+                  <div className="research-state">
+                    Loading the budget analysis...
+                  </div>
+                )}
+
+                {budgetError && (
+                  <div className="error-message large">{budgetError}</div>
+                )}
+
+                {budget && (
+                  <>
+                    <div className="plan-summary">
+                      <div className="plan-title-block">
+                        <span>Total estimated cost</span>
+                        <h3>
+                          {budget.currency}{" "}
+                          {budget.total_estimated_cost.toLocaleString()}
+                        </h3>
+                      </div>
+                      <div>
+                        <span>Shoot days</span>
+                        <strong>{budget.shoot_days}</strong>
+                      </div>
+                      <div>
+                        <span>Currency</span>
+                        <strong>{budget.currency}</strong>
+                      </div>
+                    </div>
+
+                    <div className="plan-subsection">
+                      <div className="subsection-heading">
+                        <span>Cost breakdown</span>
+                        <h3>Budget Categories</h3>
+                      </div>
+                      <div className="budget-adjustments">
+                        {budget.categories.map((category, index) => (
+                          <article
+                            className="budget-card"
+                            key={`${category.category}-${index}`}
+                          >
+                            <h4>{category.category}</h4>
+                            <div className="budget-values">
+                              <div>
+                                <span>Estimated cost</span>
+                                <strong>
+                                  {budget.currency}{" "}
+                                  {category.estimated_cost.toLocaleString()}
+                                </strong>
+                              </div>
+                            </div>
+                            <p>{category.assumption}</p>
+                          </article>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div className="risk-grid">
+                      <article className="risk-card">
+                        <h3>Budget Risks</h3>
+                        <ul>
+                          {budget.budget_risks.length > 0 ? (
+                            budget.budget_risks.map((risk, index) => (
+                              <li key={`${index}-${risk}`}>{risk}</li>
+                            ))
+                          ) : (
+                            <li>None identified</li>
+                          )}
+                        </ul>
+                      </article>
+                      <article className="mitigation-card">
+                        <h3>Major Cost Drivers</h3>
+                        <ul>
+                          {budget.major_cost_drivers.length > 0 ? (
+                            budget.major_cost_drivers.map((driver, index) => (
+                              <li key={`${index}-${driver}`}>{driver}</li>
+                            ))
+                          ) : (
+                            <li>None identified</li>
+                          )}
+                        </ul>
+                      </article>
+                    </div>
+                  </>
+                )}
+              </section>
             )}
 
             {isCompleted && activeOutput === "research" && (
@@ -1229,6 +1770,268 @@ function App() {
                           </div>
                         </article>
                       ))}
+                    </div>
+                  </>
+                )}
+              </section>
+            )}
+
+            {isCompleted && activeOutput === "call-sheet" && (
+              <section className="call-sheet-section" id="call-sheet">
+                <div className="call-sheet-header">
+                  <div>
+                    <div className="eyebrow">
+                      SHOOT-DAY OPERATIONS
+                    </div>
+                    <h2>Production Call Sheet</h2>
+                    <p>
+                      The operational shoot plan generated from the screenplay,
+                      researched constraints, approved production strategy and
+                      storyboard requirements.
+                    </p>
+                  </div>
+                  <div className="call-sheet-status-badge">
+                    Production document
+                  </div>
+                </div>
+
+                <div className="production-chain" aria-label="Production workflow">
+                  <span>Screenplay</span>
+                  <strong>→</strong>
+                  <span>AI Analysis</span>
+                  <strong>→</strong>
+                  <span>Budget</span>
+                  <strong>→</strong>
+                  <span>Real-world Research</span>
+                  <strong>→</strong>
+                  <span>Production Plan</span>
+                  <strong>→</strong>
+                  <span>Storyboard</span>
+                  <strong>→</strong>
+                  <span className="chain-current">Call Sheet</span>
+                </div>
+
+                {isCallSheetLoading && (
+                  <div className="research-state">
+                    Loading the shoot-day operational document...
+                  </div>
+                )}
+
+                {callSheetError && (
+                  <div className="error-message large">{callSheetError}</div>
+                )}
+
+                {callSheet && (
+                  <>
+                    <div className="call-sheet-title-card">
+                      <div className="call-sheet-title-copy">
+                        <span>Production</span>
+                        <h3>{callSheet.project_title}</h3>
+                        <p>{callSheet.logline || "No logline provided."}</p>
+                      </div>
+                      <div className="call-sheet-document-id">
+                        <span>Call Sheet ID</span>
+                        <strong>{callSheet.call_sheet_id}</strong>
+                      </div>
+                      <a
+                        className="call-sheet-download"
+                        href={`${API_BASE}/api/projects/${project.project_id}/call-sheet/pdf`}
+                        download
+                      >
+                        Download Call Sheet PDF
+                      </a>
+                    </div>
+
+                    <div className="call-sheet-overview-grid">
+                      <article>
+                        <span>Production company</span>
+                        <strong>{callSheetValue(callSheet.production_company)}</strong>
+                      </article>
+                      <article>
+                        <span>Project manager</span>
+                        <strong>{callSheetValue(callSheet.project_manager)}</strong>
+                      </article>
+                      <article>
+                        <span>Genre</span>
+                        <strong>{callSheetValue(callSheet.genre)}</strong>
+                      </article>
+                      <article>
+                        <span>Total shoot days</span>
+                        <strong>{callSheet.shoot_days_total}</strong>
+                      </article>
+                    </div>
+
+                    <div className="shoot-days-list">
+                      {callSheet.shoot_days.map((day) => (
+                        <article className="shoot-day-card" key={day.day_number}>
+                          <header className="shoot-day-header">
+                            <div className="shoot-day-number">
+                              <span>Shoot day</span>
+                              <strong>{formatNumber(day.day_number)}</strong>
+                            </div>
+                            <div>
+                              <span className="shoot-day-date">
+                                {callSheetDate(day.date)}
+                              </span>
+                              <h3>{day.location}</h3>
+                            </div>
+                            <div className="shoot-day-scene-count">
+                              <strong>{day.scenes_scheduled.length}</strong>
+                              <span>
+                                {day.scenes_scheduled.length === 1 ? "scene" : "scenes"}
+                              </span>
+                            </div>
+                          </header>
+
+                          <div className="shoot-day-call-strip">
+                            <div>
+                              <span>Crew call</span>
+                              <strong>{callSheetValue(day.crew_call)}</strong>
+                            </div>
+                            <div>
+                              <span>First shot</span>
+                              <strong>{callSheetValue(day.first_shot)}</strong>
+                            </div>
+                            <div>
+                              <span>Lunch</span>
+                              <strong>{callSheetValue(day.lunch_break)}</strong>
+                            </div>
+                            <div>
+                              <span>Wrap</span>
+                              <strong>{callSheetValue(day.wrap)}</strong>
+                            </div>
+                          </div>
+
+                          <div className="call-sheet-subsection">
+                            <div className="call-sheet-subsection-heading">
+                              <span>Scheduled work</span>
+                              <h4>Scenes</h4>
+                            </div>
+                            <div className="call-sheet-scenes">
+                              {day.scenes_scheduled.map((scene) => (
+                                <article
+                                  className="call-sheet-scene"
+                                  key={`${day.day_number}-${scene.scene_number}`}
+                                >
+                                  <header>
+                                    <div className="call-sheet-scene-number">
+                                      Scene {formatNumber(scene.scene_number)}
+                                    </div>
+                                    <h5>{scene.heading}</h5>
+                                    <span>{callSheetValue(scene.estimated_shooting_time)}</span>
+                                  </header>
+                                  <p>{scene.summary}</p>
+                                  <div className="call-sheet-scene-details">
+                                    <div>
+                                      <span>Characters</span>
+                                      <p>{scene.characters_present.join(", ") || "None listed"}</p>
+                                    </div>
+                                    <div>
+                                      <span>Props</span>
+                                      <p>{scene.props.join(", ") || "None listed"}</p>
+                                    </div>
+                                    <div>
+                                      <span>VFX requirements</span>
+                                      <p>{scene.vfx_requirements.join("; ") || "None listed"}</p>
+                                    </div>
+                                  </div>
+                                  {scene.notes && (
+                                    <div className="call-sheet-scene-note">
+                                      <span>Scene notes</span>
+                                      <p>{scene.notes}</p>
+                                    </div>
+                                  )}
+                                </article>
+                              ))}
+                            </div>
+                          </div>
+
+                          <div className="day-operations-grid">
+                            <section>
+                              <h4>Cast on call</h4>
+                              <ul>
+                                {(day.cast_on_call.length ? day.cast_on_call : ["None listed"]).map(
+                                  (item, index) => <li key={`${item}-${index}`}>{item}</li>,
+                                )}
+                              </ul>
+                            </section>
+                            <section>
+                              <h4>Crew on call</h4>
+                              <ul>
+                                {(day.crew_on_call.length ? day.crew_on_call : ["None listed"]).map(
+                                  (item, index) => <li key={`${item}-${index}`}>{item}</li>,
+                                )}
+                              </ul>
+                            </section>
+                            <section>
+                              <h4>Required props</h4>
+                              <ul>
+                                {(day.required_props.length ? day.required_props : ["None listed"]).map(
+                                  (item, index) => <li key={`${item}-${index}`}>{item}</li>,
+                                )}
+                              </ul>
+                            </section>
+                            <section>
+                              <h4>Required equipment</h4>
+                              <ul>
+                                {(day.required_equipment.length ? day.required_equipment : ["None listed"]).map(
+                                  (item, index) => <li key={`${item}-${index}`}>{item}</li>,
+                                )}
+                              </ul>
+                            </section>
+                          </div>
+
+                          <div className="day-notes-grid">
+                            <section className="production-notes-panel">
+                              <h4>Production notes</h4>
+                              <ol>
+                                {(day.production_notes.length ? day.production_notes : ["None listed"]).map(
+                                  (item, index) => <li key={`${index}-${item}`}>{item}</li>,
+                                )}
+                              </ol>
+                            </section>
+                            <section className="safety-panel">
+                              <h4>Safety &amp; logistics</h4>
+                              <ol>
+                                {(day.safety_and_logistics.length ? day.safety_and_logistics : ["None listed"]).map(
+                                  (item, index) => <li key={`${index}-${item}`}>{item}</li>,
+                                )}
+                              </ol>
+                            </section>
+                          </div>
+                        </article>
+                      ))}
+                    </div>
+
+                    <div className="master-people-grid">
+                      <section>
+                        <div className="call-sheet-subsection-heading">
+                          <span>Master list</span>
+                          <h4>Cast</h4>
+                        </div>
+                        <div className="master-list">
+                          {callSheet.cast_list.map((cast) => (
+                            <div key={cast.character_name}>
+                              <strong>{cast.character_name}</strong>
+                              <span>{cast.actor_name}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </section>
+                      <section>
+                        <div className="call-sheet-subsection-heading">
+                          <span>Master list</span>
+                          <h4>Crew</h4>
+                        </div>
+                        <div className="master-list">
+                          {callSheet.crew_list.map((crew) => (
+                            <div key={crew.role}>
+                              <strong>{crew.role}</strong>
+                              <span>{crew.name}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </section>
                     </div>
                   </>
                 )}

@@ -2,18 +2,26 @@ import uuid
 from pathlib import Path
 
 from fastapi import APIRouter, File, HTTPException, UploadFile, status
+from fastapi.responses import FileResponse
 from pydantic import ValidationError
 
 from api.schemas import ProjectState, ProjectStatus
 from api.services.pipeline import start_project_pipeline
 from api.services.project_outputs import (
+    get_call_sheet_pdf_path,
+    load_budget_analysis,
+    load_call_sheet,
     load_production_plan,
     load_production_research,
+    load_screenplay_analysis,
     load_storyboard,
 )
 from api.services.project_store import project_store
+from schemas.budget import BudgetAnalysis
+from schemas.call_sheet import CallSheet
 from schemas.production_plan import ProductionPlan
 from schemas.production_research import ProductionResearch
+from schemas.screenplay import ScreenplayAnalysis
 from schemas.storyboard import Storyboard
 
 router = APIRouter(prefix="/api/projects", tags=["projects"])
@@ -77,6 +85,42 @@ async def get_project_status(project_id: str):
     return project
 
 
+@router.get("/{project_id}/screenplay", response_model=ScreenplayAnalysis)
+async def get_project_screenplay(project_id: str):
+    project = project_store.get(project_id)
+    if project is None:
+        raise HTTPException(404, "Project not found.")
+
+    try:
+        return load_screenplay_analysis(project_id)
+    except FileNotFoundError as exc:
+        raise HTTPException(
+            404, "Screenplay analysis is not available yet."
+        ) from exc
+    except ValidationError as exc:
+        raise HTTPException(
+            500, "Stored screenplay analysis failed validation."
+        ) from exc
+
+
+@router.get("/{project_id}/budget", response_model=BudgetAnalysis)
+async def get_project_budget(project_id: str):
+    project = project_store.get(project_id)
+    if project is None:
+        raise HTTPException(404, "Project not found.")
+
+    try:
+        return load_budget_analysis(project_id)
+    except FileNotFoundError as exc:
+        raise HTTPException(
+            404, "Budget analysis is not available yet."
+        ) from exc
+    except ValidationError as exc:
+        raise HTTPException(
+            500, "Stored budget analysis failed validation."
+        ) from exc
+
+
 @router.get("/{project_id}/research", response_model=ProductionResearch)
 async def get_project_research(project_id: str):
     project = project_store.get(project_id)
@@ -129,3 +173,41 @@ async def get_project_storyboard(project_id: str):
         raise HTTPException(
             500, "Stored storyboard failed validation."
         ) from exc
+
+
+@router.get("/{project_id}/call-sheet", response_model=CallSheet)
+async def get_project_call_sheet(project_id: str):
+    project = project_store.get(project_id)
+    if project is None:
+        raise HTTPException(404, "Project not found.")
+
+    try:
+        return load_call_sheet(project_id)
+    except FileNotFoundError as exc:
+        raise HTTPException(
+            404, "Call sheet is not available yet."
+        ) from exc
+    except ValidationError as exc:
+        raise HTTPException(
+            500, "Stored call sheet failed validation."
+        ) from exc
+
+
+@router.get("/{project_id}/call-sheet/pdf", response_class=FileResponse)
+async def get_project_call_sheet_pdf(project_id: str):
+    project = project_store.get(project_id)
+    if project is None:
+        raise HTTPException(404, "Project not found.")
+
+    try:
+        pdf_path = get_call_sheet_pdf_path(project_id)
+    except FileNotFoundError as exc:
+        raise HTTPException(
+            404, "Call sheet PDF is not available yet."
+        ) from exc
+
+    return FileResponse(
+        path=pdf_path,
+        media_type="application/pdf",
+        filename=f"{project_id}-call-sheet.pdf",
+    )
