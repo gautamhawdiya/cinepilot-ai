@@ -49,4 +49,7 @@ class ProjectState(BaseModel):
         }
     )
 
+    # The most recent producer constraint applied via re-planning, if any.
+    producer_directive: str | None = None
+
     error: str | None = None

@@ -9,7 +9,10 @@ WORKDIR /app
 COPY package.json package-lock.json ./
 RUN npm ci
 COPY . .
-ARG VITE_API_BASE_URL
+# Defaults to the deployed backend so `gcloud run deploy --source .` (which
+# builds in Cloud Build and can't pass --build-arg) produces a working image.
+# Override with --build-arg when building against a different backend.
+ARG VITE_API_BASE_URL=https://cinepilot-api-908769180590.us-central1.run.app
 ENV VITE_API_BASE_URL=${VITE_API_BASE_URL}
 RUN npm run build
 

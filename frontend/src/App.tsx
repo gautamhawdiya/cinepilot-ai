@@ -20,6 +20,7 @@ type Project = {
   status: "created" | "running" | "completed" | "failed";
   current_stage: string | null;
   stages: Record<string, Stage>;
+  producer_directive: string | null;
   error: string | null;
 };
 
@@ -262,6 +263,15 @@ const DISPLAY_STAGE_ORDER = [
   "pdf",
 ];
 
+// One-tap constraints for the re-plan control. Deliberately the kinds of
+// tradeoff a producer actually forces: less money, less time, fewer places.
+const REPLAN_SUGGESTIONS = [
+  "Cut the budget by 30%",
+  "Shoot in 3 days or fewer",
+  "Use a single location",
+  "Remove all VFX shots",
+];
+
 type StageStatusValue = "pending" | "running" | "completed" | "failed";
 
 function combineStageStatus(
@@ -320,6 +330,9 @@ function App() {
   const [callSheetError, setCallSheetError] = useState<string | null>(null);
   const [activeOutput, setActiveOutput] =
     useState<OutputView>("screenplay");
+  const [directive, setDirective] = useState("");
+  const [isReplanning, setIsReplanning] = useState(false);
+  const [replanError, setReplanError] = useState<string | null>(null);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -716,6 +729,46 @@ function App() {
     }
 
     setFile(selectedFile);
+  };
+
+  const submitReplan = async (instruction: string) => {
+    const trimmed = instruction.trim();
+    if (!project || trimmed.length < 3) {
+      return;
+    }
+
+    setReplanError(null);
+    setIsReplanning(true);
+
+    try {
+      const response = await fetch(
+        `${API_BASE}/api/projects/${project.project_id}/replan`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ directive: trimmed }),
+        },
+      );
+
+      if (!response.ok) {
+        const body = await response.text();
+        throw new Error(
+          body || "Unable to start re-planning.",
+        );
+      }
+
+      // The response carries status "running", which restarts the status
+      // poller and re-locks the downstream tabs until each stage lands again.
+      const updated: Project = await response.json();
+      setProject(updated);
+      setDirective("");
+    } catch (err) {
+      setReplanError(
+        err instanceof Error ? err.message : "Unable to start re-planning.",
+      );
+    } finally {
+      setIsReplanning(false);
+    }
   };
 
   const createAndRunProject = async () => {
@@ -1556,6 +1609,70 @@ function App() {
                   <span className="lineage-result">
                     Actionable Production Plan
                   </span>
+                </div>
+
+                <div className="replan-panel">
+                  <div className="replan-copy">
+                    <span>Producer control</span>
+                    <h3>Change a constraint, re-plan the production</h3>
+                    <p>
+                      The screenplay, budget and research stay as they are.
+                      CinePilot re-runs planning, storyboard and call sheet
+                      against your new constraint.
+                    </p>
+                  </div>
+
+                  {project.producer_directive && (
+                    <div className="replan-active">
+                      <span>Currently applied</span>
+                      <p>{project.producer_directive}</p>
+                    </div>
+                  )}
+
+                  <div className="replan-suggestions">
+                    {REPLAN_SUGGESTIONS.map((suggestion) => (
+                      <button
+                        key={suggestion}
+                        type="button"
+                        onClick={() => setDirective(suggestion)}
+                        disabled={isRunning || isReplanning}
+                      >
+                        {suggestion}
+                      </button>
+                    ))}
+                  </div>
+
+                  <div className="replan-input-row">
+                    <input
+                      type="text"
+                      value={directive}
+                      maxLength={500}
+                      placeholder="e.g. Cap the budget at $40,000 and shoot in two days"
+                      onChange={(event) => setDirective(event.target.value)}
+                      onKeyDown={(event) => {
+                        if (event.key === "Enter") {
+                          void submitReplan(directive);
+                        }
+                      }}
+                      disabled={isRunning || isReplanning}
+                    />
+                    <button
+                      className="primary-button small"
+                      type="button"
+                      onClick={() => void submitReplan(directive)}
+                      disabled={
+                        isRunning ||
+                        isReplanning ||
+                        directive.trim().length < 3
+                      }
+                    >
+                      {isReplanning ? "Re-planning..." : "Re-plan"}
+                    </button>
+                  </div>
+
+                  {replanError && (
+                    <div className="error-message">{replanError}</div>
+                  )}
                 </div>
 
                 {isPlanLoading && (

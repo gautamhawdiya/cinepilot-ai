@@ -420,18 +420,24 @@ Return ONLY valid JSON matching CallSheet.
 """
 
 
-call_sheet_agent = LlmAgent(
-    name="call_sheet_agent",
-    model="gemini-2.5-flash",
-    description=(
-        "Creates a production-ready call sheet from "
-        "screenplay, production plan, storyboard, "
-        "and external production research."
-    ),
-    instruction=_build_instruction,
+def build_call_sheet_agent() -> LlmAgent:
+    # ADK binds an agent instance to exactly one parent, so each workflow that
+    # includes this stage needs its own instance.
+    return LlmAgent(
+        name="call_sheet_agent",
+        model="gemini-2.5-flash",
+        description=(
+            "Creates a production-ready call sheet from "
+            "screenplay, production plan, storyboard, "
+            "and external production research."
+        ),
+        instruction=_build_instruction,
 
-    # Structured output contract.
-    output_schema=CallSheet,
-    output_key="call_sheet",
-    include_contents="none",
-)
+        # Structured output contract.
+        output_schema=CallSheet,
+        output_key="call_sheet",
+        include_contents="none",
+    )
+
+
+call_sheet_agent = build_call_sheet_agent()

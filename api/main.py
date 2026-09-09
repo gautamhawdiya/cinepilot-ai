@@ -1,8 +1,5 @@
-import asyncio
-import logging
 import os
 import sys
-from contextlib import asynccontextmanager
 
 if sys.platform == "win32":
     # This machine's IPv6 route to Google's APIs is broken (confirmed:
@@ -37,9 +34,6 @@ from api.routes.health import router as health_router
 from api.routes.projects import router as projects_router
 
 
-logger = logging.getLogger(__name__)
-
-
 DEFAULT_DEV_ORIGINS = [
     "http://localhost:5173",
     "http://127.0.0.1:5173",
@@ -53,56 +47,12 @@ ALLOWED_ORIGINS = (
 )
 
 
-async def _warm_up_vertex_credentials() -> None:
-    """On some Windows dev machines, the *first* HTTPS connection to a Google
-    auth host (oauth2.googleapis.com, for Vertex AI's ADC token refresh)
-    reliably stalls for 30-120s before succeeding, while every connection
-    after that is fast -- confirmed by repeated manual testing, and
-    consistent with antivirus/DNS cold-path behavior rather than a real
-    outage. Pay that one-time cost here at startup, well before a real
-    pipeline run needs a token, instead of letting a user's first request
-    eat it (or fail outright if it exceeds the request's own timeout).
-    """
-    if os.environ.get("GOOGLE_GENAI_USE_ENTERPRISE", "").lower() != "true":
-        return
-
-    import google.auth
-    import google.auth.transport.requests
-
-    for attempt in range(1, 4):
-        try:
-            credentials, _ = google.auth.default(
-                scopes=["https://www.googleapis.com/auth/cloud-platform"]
-            )
-            await asyncio.to_thread(
-                credentials.refresh, google.auth.transport.requests.Request()
-            )
-            logger.info("Vertex AI credentials warmed up successfully.")
-            return
-        except Exception as exc:
-            logger.warning(
-                "Vertex AI credential warm-up attempt %d/3 failed: %s",
-                attempt,
-                exc,
-            )
-
-
-@asynccontextmanager
-async def _lifespan(_: FastAPI):
-    # TestClient(app) used as a context manager runs this same lifespan --
-    # never make a real network call from the test suite.
-    if sys.platform == "win32" and "pytest" not in sys.modules:
-        asyncio.create_task(_warm_up_vertex_credentials())
-    yield
-
-
 app = FastAPI(
     title="CinePilot AI API",
     version="0.1.0",
     description=(
         "API layer for the CinePilot AI production pipeline."
     ),
-    lifespan=_lifespan,
 )
 
 app.add_middleware(

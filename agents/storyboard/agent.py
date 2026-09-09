@@ -274,15 +274,21 @@ Return ONLY valid JSON matching Storyboard.
 """
 
 
-storyboard_agent = LlmAgent(
-    name="storyboard_agent",
-    model="gemini-2.5-flash",
-    description=(
-        "Creates a cinematic storyboard and shot plan "
-        "from screenplay and production planning data."
-    ),
-    instruction=_build_instruction,
-    output_schema=Storyboard,
-    output_key="storyboard",
-    include_contents="none",
-)
+def build_storyboard_agent() -> LlmAgent:
+    # ADK binds an agent instance to exactly one parent, so each workflow that
+    # includes this stage needs its own instance.
+    return LlmAgent(
+        name="storyboard_agent",
+        model="gemini-2.5-flash",
+        description=(
+            "Creates a cinematic storyboard and shot plan "
+            "from screenplay and production planning data."
+        ),
+        instruction=_build_instruction,
+        output_schema=Storyboard,
+        output_key="storyboard",
+        include_contents="none",
+    )
+
+
+storyboard_agent = build_storyboard_agent()

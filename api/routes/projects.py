@@ -1,12 +1,13 @@
 import uuid
 from pathlib import Path
 
-from fastapi import APIRouter, File, HTTPException, UploadFile, status
+from fastapi import APIRouter, File, HTTPException, Request, UploadFile, status
 from fastapi.responses import FileResponse
-from pydantic import ValidationError
+from pydantic import BaseModel, Field, ValidationError
 
-from api.schemas import ProjectState, ProjectStatus
-from api.services.pipeline import start_project_pipeline
+from api.schemas import ProjectState, ProjectStatus, StageStatus
+from api.services.pipeline import start_project_pipeline, start_project_replan
+from api.services.rate_limit import enforce_run_limit, enforce_upload_limit
 from api.services.project_outputs import (
     get_call_sheet_pdf_path,
     get_storyboard_image_path,
@@ -32,7 +33,9 @@ UPLOAD_ROOT = PROJECT_ROOT / "outputs" / "projects"
 
 
 @router.post("", response_model=ProjectState, status_code=status.HTTP_201_CREATED)
-async def create_project(screenplay: UploadFile = File(...)):
+async def create_project(request: Request, screenplay: UploadFile = File(...)):
+    enforce_upload_limit(request)
+
     filename = screenplay.filename or "screenplay.pdf"
     if not filename.lower().endswith(".pdf"):
         raise HTTPException(400, "Only screenplay PDF files are currently supported.")
@@ -56,7 +59,7 @@ async def create_project(screenplay: UploadFile = File(...)):
 
 
 @router.post("/{project_id}/run", response_model=ProjectState, status_code=status.HTTP_202_ACCEPTED)
-async def run_project(project_id: str):
+async def run_project(project_id: str, request: Request):
     project = project_store.get(project_id)
     if project is None:
         raise HTTPException(404, "Project not found.")
@@ -65,7 +68,45 @@ async def run_project(project_id: str):
     if project.status == ProjectStatus.COMPLETED:
         raise HTTPException(409, "Project pipeline is already completed.")
 
+    enforce_run_limit(request)
+
     start_project_pipeline(project_id)
+    project.status = ProjectStatus.RUNNING
+    project_store.update(project)
+    return project
+
+
+class ReplanRequest(BaseModel):
+    directive: str = Field(min_length=3, max_length=500)
+
+
+@router.post(
+    "/{project_id}/replan",
+    response_model=ProjectState,
+    status_code=status.HTTP_202_ACCEPTED,
+)
+async def replan_project_endpoint(
+    project_id: str, body: ReplanRequest, request: Request
+):
+    """Re-plan an already-generated package under a new producer constraint.
+
+    Only the plan, storyboard and call sheet are recomputed -- the screenplay
+    analysis, budget and research still describe the same script and world.
+    """
+    project = project_store.get(project_id)
+    if project is None:
+        raise HTTPException(404, "Project not found.")
+    if project.status == ProjectStatus.RUNNING:
+        raise HTTPException(409, "This project is already running.")
+    if project.stages["production_research"].status != StageStatus.COMPLETED:
+        raise HTTPException(
+            409,
+            "Re-planning needs a completed first pass to build on.",
+        )
+
+    enforce_run_limit(request)
+
+    start_project_replan(project_id, body.directive.strip())
     project.status = ProjectStatus.RUNNING
     project_store.update(project)
     return project
