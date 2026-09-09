@@ -21,6 +21,7 @@ type Project = {
   current_stage: string | null;
   stages: Record<string, Stage>;
   producer_directive: string | null;
+  images_pending: boolean;
   error: string | null;
 };
 
@@ -352,6 +353,7 @@ function App() {
   const isPlanReady = stageReady(OUTPUT_STAGE.plan);
   const isStoryboardReady = stageReady(OUTPUT_STAGE.storyboard);
   const isStoryboardImagesReady = stageReady("storyboard_images");
+  const imagesPending = project?.images_pending ?? false;
   const isCallSheetReady = stageReady(OUTPUT_STAGE["call-sheet"]);
 
   const anyOutputReady =
@@ -363,7 +365,7 @@ function App() {
     isCallSheetReady;
 
   useEffect(() => {
-    if (!project?.project_id || !isRunning) {
+    if (!project?.project_id || (!isRunning && !imagesPending)) {
       return;
     }
 
@@ -380,8 +382,11 @@ function App() {
         const updatedProject: Project = await response.json();
         setProject(updatedProject);
 
+        // Keep polling past completion while background shot frames are
+        // still arriving, so images_pending flipping false is observed.
         if (
-          updatedProject.status === "completed" ||
+          (updatedProject.status === "completed" &&
+            !updatedProject.images_pending) ||
           updatedProject.status === "failed"
         ) {
           window.clearInterval(interval);
@@ -392,7 +397,7 @@ function App() {
     }, 2000);
 
     return () => window.clearInterval(interval);
-  }, [project?.project_id, isRunning]);
+  }, [project?.project_id, isRunning, imagesPending]);
 
   useEffect(() => {
     if (!project?.project_id || !isScreenplayReady) {
@@ -665,10 +670,20 @@ function App() {
 
     void loadStoryboardImages();
 
+    // Per-shot frames keep landing after the pipeline completes, so refresh
+    // while the backend says more are coming. The final pass runs when
+    // imagesPending flips false and re-triggers this effect.
+    const interval = imagesPending
+      ? window.setInterval(() => void loadStoryboardImages(), 8000)
+      : undefined;
+
     return () => {
       cancelled = true;
+      if (interval !== undefined) {
+        window.clearInterval(interval);
+      }
     };
-  }, [project?.project_id, isStoryboardImagesReady]);
+  }, [project?.project_id, isStoryboardImagesReady, imagesPending]);
 
   useEffect(() => {
     if (!project?.project_id || !isPlanReady) {
@@ -1856,8 +1871,14 @@ function App() {
                       informed by the approved production strategy.
                     </p>
                   </div>
-                  <div className="storyboard-data-badge">
-                    Planning data
+                  <div
+                    className={`storyboard-data-badge${
+                      imagesPending ? " generating" : ""
+                    }`}
+                  >
+                    {imagesPending
+                      ? "Generating remaining frames..."
+                      : "Planning data"}
                   </div>
                 </div>
 

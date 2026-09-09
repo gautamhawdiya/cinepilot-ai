@@ -73,6 +73,17 @@ REPLAN_STAGES = (
 _APP_NAME = "cinepilot-api"
 _USER_ID = "local_user"
 
+# The first outbound TLS connection of a fresh process occasionally hangs
+# indefinitely rather than failing (observed on a dev machine with HTTPS
+# interception). Without a bound, a project sits "running" forever with no
+# error -- far worse than a visible failure. The first workflow event normally
+# arrives in 10-20s, so this only trips on a genuinely stuck connection.
+_FIRST_EVENT_TIMEOUT_SECONDS = 90
+
+
+class ColdStartTimeout(Exception):
+    """The workflow produced no events before the cold-start deadline."""
+
 
 def _set_stage(project: ProjectState, name: str, status: StageStatus, error: str | None = None):
     project.current_stage = name if status in {StageStatus.RUNNING, StageStatus.FAILED} else project.current_stage
@@ -113,11 +124,33 @@ async def _consume_agent_events(
 ) -> None:
     """Drive one ADK workflow, mirroring its event stream onto stage status
     and persisting each stage's validated output as it lands."""
-    async for event in runner.run_async(
+    stream = runner.run_async(
         user_id=_USER_ID,
         session_id=session_id,
         new_message=message,
-    ):
+    ).__aiter__()
+
+    awaiting_first_event = True
+
+    while True:
+        try:
+            if awaiting_first_event:
+                event = await asyncio.wait_for(
+                    stream.__anext__(), _FIRST_EVENT_TIMEOUT_SECONDS
+                )
+            else:
+                event = await stream.__anext__()
+        except StopAsyncIteration:
+            break
+        except TimeoutError as exc:
+            await stream.aclose()
+            raise ColdStartTimeout(
+                "The model connection did not respond within "
+                f"{_FIRST_EVENT_TIMEOUT_SECONDS}s."
+            ) from exc
+
+        awaiting_first_event = False
+
         stage = _AGENT_TO_STAGE.get(event.author)
         if stage is None:
             continue
@@ -147,6 +180,153 @@ async def _consume_agent_events(
         _set_stage(project, stage, StageStatus.COMPLETED)
 
 
+async def _run_workflow(
+    agent,
+    session_id: str,
+    message: types.Content,
+    project: ProjectState,
+    output_dir: Path,
+    running_stages: set[str],
+    validated: dict[str, BaseModel],
+    seed_state: dict | None = None,
+) -> None:
+    """Run a workflow, retrying once if the connection never woke up.
+
+    No events means no stage was touched, so a retry starts from a clean slate
+    rather than resuming a half-applied run.
+    """
+    for attempt in (1, 2):
+        runner = await _build_runner(
+            agent, f"{session_id}-a{attempt}", state=seed_state
+        )
+        try:
+            await _consume_agent_events(
+                runner,
+                f"{session_id}-a{attempt}",
+                message,
+                project,
+                output_dir,
+                running_stages,
+                validated,
+            )
+            return
+        except ColdStartTimeout:
+            if attempt == 2:
+                raise
+            logger.warning(
+                "Workflow produced no events in %ss; retrying once.",
+                _FIRST_EVENT_TIMEOUT_SECONDS,
+            )
+
+
+def _shot_image_path(output_dir: Path, scene_number: int, shot_number: int) -> Path:
+    return (
+        output_dir
+        / "storyboard_images"
+        / f"scene_{scene_number:02d}_shot_{shot_number:02d}.png"
+    )
+
+
+def _images_enabled() -> bool:
+    return os.environ.get(
+        "ENABLE_STORYBOARD_IMAGES", "true"
+    ).strip().lower() not in {"0", "false", "no"}
+
+
+async def _generate_images(
+    shots: list[tuple[int, int, str]], output_dir: Path, patient: bool = False
+) -> tuple[int, str | None]:
+    """Generate a batch of shot images, bounded by the model's rate limit.
+
+    Returns (succeeded, last_error). Never raises: a missing frame degrades to
+    the UI's shot-spec placeholder rather than failing the project.
+    """
+    semaphore = asyncio.Semaphore(_MAX_CONCURRENT_IMAGE_REQUESTS)
+
+    async def _one(scene_number: int, shot_number: int, prompt: str):
+        async with semaphore:
+            return await asyncio.to_thread(
+                generate_scene_image_to_path,
+                prompt,
+                _shot_image_path(output_dir, scene_number, shot_number),
+                patient,
+            )
+
+    results = await asyncio.gather(
+        *(_one(scene, shot, prompt) for scene, shot, prompt in shots),
+        return_exceptions=True,
+    )
+
+    succeeded = 0
+    last_error = None
+    for result in results:
+        if isinstance(result, Exception):
+            logger.warning("Storyboard image generation failed: %s", result)
+            last_error = str(result)
+        else:
+            succeeded += 1
+
+    return succeeded, last_error
+
+
+# Background per-shot image tasks, held so the event loop doesn't collect them
+# mid-flight.
+_background_image_tasks: set[asyncio.Task] = set()
+
+
+async def _generate_remaining_shot_images(
+    project_id: str, output_dir: Path, storyboard: Storyboard
+) -> None:
+    """Fill in every shot beyond each scene's key frame, after the pipeline has
+    already reported completion.
+
+    Generating all shots inline pushed a 16-shot run past 9 minutes with
+    several permanent 429s, which is unusable during a live demo. Doing it here
+    means the package is ready in the usual ~3 minutes and the remaining frames
+    stream in behind it.
+    """
+    shots = [
+        (scene.scene_number, shot.shot_number, shot.image_prompt)
+        for scene in storyboard.scenes
+        for shot in scene.shots[1:]
+    ]
+
+    try:
+        if shots:
+            succeeded, _ = await _generate_images(shots, output_dir, patient=True)
+            logger.info(
+                "Background storyboard frames: %d/%d generated for %s",
+                succeeded,
+                len(shots),
+                project_id,
+            )
+    finally:
+        project = project_store.get(project_id)
+        if project is not None:
+            project.images_pending = False
+            project_store.update(project)
+
+
+def _start_remaining_image_generation(
+    project_id: str, output_dir: Path, storyboard: Storyboard
+) -> None:
+    if not _images_enabled() or not any(
+        len(scene.shots) > 1 for scene in storyboard.scenes
+    ):
+        return
+
+    project = project_store.get(project_id)
+    if project is not None:
+        project.images_pending = True
+        project_store.update(project)
+
+    task = asyncio.create_task(
+        _generate_remaining_shot_images(project_id, output_dir, storyboard)
+    )
+    _background_image_tasks.add(task)
+    task.add_done_callback(_background_image_tasks.discard)
+
+
 async def _generate_storyboard_images(
     project: ProjectState, output_dir: Path, storyboard: Storyboard
 ) -> None:
@@ -161,44 +341,17 @@ async def _generate_storyboard_images(
     """
     _set_stage(project, "storyboard_images", StageStatus.RUNNING)
 
-    images_enabled = os.environ.get(
-        "ENABLE_STORYBOARD_IMAGES", "true"
-    ).strip().lower() not in {"0", "false", "no"}
-
-    if not images_enabled:
+    if not _images_enabled():
         logger.info("Storyboard image generation disabled via ENABLE_STORYBOARD_IMAGES.")
         _set_stage(project, "storyboard_images", StageStatus.COMPLETED)
         return
 
-    image_semaphore = asyncio.Semaphore(_MAX_CONCURRENT_IMAGE_REQUESTS)
-
-    async def _generate_one_image(scene_number: int, shot_number: int, prompt: str):
-        async with image_semaphore:
-            return await asyncio.to_thread(
-                generate_scene_image_to_path,
-                prompt,
-                output_dir
-                / "storyboard_images"
-                / f"scene_{scene_number:02d}_shot_{shot_number:02d}.png",
-            )
-
-    image_tasks = [
-        _generate_one_image(
-            scene.scene_number, scene.shots[0].shot_number, scene.shots[0].image_prompt
-        )
+    key_frames = [
+        (scene.scene_number, scene.shots[0].shot_number, scene.shots[0].image_prompt)
         for scene in storyboard.scenes
         if scene.shots
     ]
-    image_results = await asyncio.gather(*image_tasks, return_exceptions=True)
-
-    generated_count = sum(
-        1 for result in image_results if not isinstance(result, Exception)
-    )
-    last_image_error = None
-    for result in image_results:
-        if isinstance(result, Exception):
-            logger.warning("Storyboard image generation failed: %s", result)
-            last_image_error = str(result)
+    generated_count, last_image_error = await _generate_images(key_frames, output_dir)
 
     if generated_count > 0:
         _set_stage(project, "storyboard_images", StageStatus.COMPLETED)
@@ -284,9 +437,6 @@ async def run_project_pipeline(project_id: str) -> None:
 
         pdf_bytes = Path(project.screenplay_path).read_bytes()
 
-        session_id = f"project-{project_id}"
-        runner = await _build_runner(production_pipeline_agent, session_id)
-
         message = types.Content(
             role="user",
             parts=[
@@ -305,8 +455,14 @@ async def run_project_pipeline(project_id: str) -> None:
             ],
         )
 
-        await _consume_agent_events(
-            runner, session_id, message, project, output_dir, running_stages, validated
+        await _run_workflow(
+            production_pipeline_agent,
+            f"project-{project_id}",
+            message,
+            project,
+            output_dir,
+            running_stages,
+            validated,
         )
 
         await _generate_storyboard_images(project, output_dir, validated["storyboard"])
@@ -315,6 +471,12 @@ async def run_project_pipeline(project_id: str) -> None:
         project.status = ProjectStatus.COMPLETED
         project.current_stage = None
         project_store.update(project)
+
+        # The package is complete and downloadable at this point; the rest of
+        # the per-shot frames stream in behind it.
+        _start_remaining_image_generation(
+            project_id, output_dir, validated["storyboard"]
+        )
 
     except Exception as exc:
         _record_failure(project_id, project, exc, running_stages)
@@ -352,13 +514,6 @@ async def replan_project(project_id: str, directive: str) -> None:
             "producer_directive": directive,
         }
 
-        # A fresh session id per re-plan, so an earlier pass's conversation
-        # state can't leak into this one.
-        session_id = f"project-{project_id}-replan-{uuid.uuid4().hex[:8]}"
-        runner = await _build_runner(
-            replan_pipeline_agent, session_id, state=seed_state
-        )
-
         message = types.Content(
             role="user",
             parts=[
@@ -372,8 +527,17 @@ async def replan_project(project_id: str, directive: str) -> None:
             ],
         )
 
-        await _consume_agent_events(
-            runner, session_id, message, project, output_dir, running_stages, validated
+        # A fresh session id per re-plan, so an earlier pass's conversation
+        # state can't leak into this one.
+        await _run_workflow(
+            replan_pipeline_agent,
+            f"project-{project_id}-replan-{uuid.uuid4().hex[:8]}",
+            message,
+            project,
+            output_dir,
+            running_stages,
+            validated,
+            seed_state=seed_state,
         )
 
         await _generate_storyboard_images(project, output_dir, validated["storyboard"])
@@ -382,6 +546,12 @@ async def replan_project(project_id: str, directive: str) -> None:
         project.status = ProjectStatus.COMPLETED
         project.current_stage = None
         project_store.update(project)
+
+        # The package is complete and downloadable at this point; the rest of
+        # the per-shot frames stream in behind it.
+        _start_remaining_image_generation(
+            project_id, output_dir, validated["storyboard"]
+        )
 
     except Exception as exc:
         _record_failure(project_id, project, exc, running_stages)

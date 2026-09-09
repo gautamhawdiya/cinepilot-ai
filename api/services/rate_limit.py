@@ -13,13 +13,15 @@ def _limit_from_env(name: str, default: int) -> int:
         return default
 
 
-# A pipeline run costs six Gemini calls, a live Parallel search and one image
-# per scene, so an open URL is a standing invitation to burn the project's
-# Vertex quota. Runs take ~5 minutes each, so these ceilings are far above what
-# genuine use hits while still capping a scripted abuser. Set either to 0 to
-# disable that check.
+# A pipeline run costs six Gemini calls, a live Parallel search, and an image
+# for every shot in the storyboard -- tens of image generations, most of them
+# generated in the background after the run reports complete. An open URL is
+# therefore a standing invitation to burn the project's Vertex image quota,
+# which empirically 429s well before a determined caller would. Runs take
+# minutes each, so these ceilings sit far above genuine use. Set either to 0
+# to disable that check.
 _RUNS_PER_IP_PER_HOUR = _limit_from_env("RATE_LIMIT_RUNS_PER_IP_PER_HOUR", 10)
-_RUNS_GLOBAL_PER_HOUR = _limit_from_env("RATE_LIMIT_RUNS_GLOBAL_PER_HOUR", 40)
+_RUNS_GLOBAL_PER_HOUR = _limit_from_env("RATE_LIMIT_RUNS_GLOBAL_PER_HOUR", 12)
 _UPLOADS_PER_IP_PER_HOUR = _limit_from_env("RATE_LIMIT_UPLOADS_PER_IP_PER_HOUR", 30)
 
 _WINDOW_SECONDS = 3600

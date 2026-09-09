@@ -21,16 +21,21 @@ _IMAGE_MODEL = "gemini-3.1-flash-image"
 # transient rate-limit doesn't permanently drop a shot's image.
 _MAX_ATTEMPTS = 5
 _BASE_DELAY_SECONDS = 3
+_MAX_DELAY_SECONDS = 60
 
 
-def _generate_image(prompt: str) -> Image.Image:
+def _generate_image(
+    prompt: str,
+    max_attempts: int = _MAX_ATTEMPTS,
+    base_delay_seconds: int = _BASE_DELAY_SECONDS,
+) -> Image.Image:
     client = genai.Client(
         vertexai=True,
         project=os.environ["GOOGLE_CLOUD_PROJECT"],
         location=os.environ["GOOGLE_CLOUD_LOCATION"],
     )
 
-    for attempt in range(1, _MAX_ATTEMPTS + 1):
+    for attempt in range(1, max_attempts + 1):
         try:
             response = client.models.generate_content(
                 model=_IMAGE_MODEL,
@@ -43,8 +48,13 @@ def _generate_image(prompt: str) -> Image.Image:
                 ),
             )
         except ClientError as exc:
-            if exc.code == 429 and attempt < _MAX_ATTEMPTS:
-                time.sleep(_BASE_DELAY_SECONDS * (2 ** (attempt - 1)))
+            if exc.code == 429 and attempt < max_attempts:
+                # Capped: quota refills on the order of a minute, so waiting
+                # longer than that buys nothing and would pin a concurrency
+                # slot that another shot could be using.
+                time.sleep(
+                    min(base_delay_seconds * (2 ** (attempt - 1)), _MAX_DELAY_SECONDS)
+                )
                 continue
             raise
 
@@ -76,11 +86,22 @@ def generate_storyboard_image(
     return str(output_file)
 
 
-def generate_scene_image_to_path(prompt: str, output_path: Path) -> Path:
+def generate_scene_image_to_path(
+    prompt: str, output_path: Path, patient: bool = False
+) -> Path:
     """Generate one image and save it to an explicit path. Used by the live
     per-project pipeline to write project-scoped storyboard preview images.
+
+    `patient` trades latency for coverage: the image model's quota refills on
+    the order of a minute, so a frame nobody is waiting on (generated in the
+    background after the run completes) should keep retrying long past the
+    point where a blocking caller would have to give up.
     """
-    image = _generate_image(prompt)
+    if patient:
+        image = _generate_image(prompt, max_attempts=9, base_delay_seconds=5)
+    else:
+        image = _generate_image(prompt)
+
     output_path.parent.mkdir(parents=True, exist_ok=True)
     image.save(output_path)
     return output_path

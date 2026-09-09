@@ -52,4 +52,8 @@ class ProjectState(BaseModel):
     # The most recent producer constraint applied via re-planning, if any.
     producer_directive: str | None = None
 
+    # True while the remaining per-shot storyboard frames are still being
+    # generated in the background, after the pipeline itself has completed.
+    images_pending: bool = False
+
     error: str | None = None

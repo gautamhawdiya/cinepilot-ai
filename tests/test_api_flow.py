@@ -263,7 +263,7 @@ def mock_storyboard_images(monkeypatch, tmp_path):
     """
     from PIL import Image
 
-    def _fake_generate(prompt, output_path):
+    def _fake_generate(prompt, output_path, patient=False):
         output_path.parent.mkdir(parents=True, exist_ok=True)
         Image.new("RGB", (4, 4), color="black").save(output_path)
         return output_path

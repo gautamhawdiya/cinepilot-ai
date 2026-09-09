@@ -1019,6 +1019,13 @@
   text-transform: uppercase;
 }
 
+.storyboard-data-badge.generating {
+  border-color: rgba(155, 138, 251, 0.4);
+  background: rgba(155, 138, 251, 0.1);
+  color: #c8c0ff;
+  animation: dot-breathe 2s ease-in-out infinite;
+}
+
 .production-chain {
   margin: 0 0 32px;
   padding: 16px 18px;
