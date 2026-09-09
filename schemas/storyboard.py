@@ -17,7 +17,7 @@ class StoryboardShot(BaseModel):
     lighting: str
     mood: str
     vfx_required: bool
-    vfx_notes: str | None
+    vfx_notes: str | None = None
     image_prompt: str
 
 

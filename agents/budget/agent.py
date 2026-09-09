@@ -1,4 +1,7 @@
+import json
+
 from google.adk.agents import Agent
+from google.adk.agents.readonly_context import ReadonlyContext
 
 from schemas.budget import BudgetAnalysis
 
@@ -54,6 +57,22 @@ Return this structure:
 """
 
 
+def _build_instruction(context: ReadonlyContext) -> str:
+    screenplay_json = json.dumps(
+        context.state.get("screenplay_analysis", {}), indent=2
+    )
+    return f"""{BUDGET_AGENT_INSTRUCTION}
+
+Create a preliminary production budget using ONLY this validated screenplay analysis.
+Do not analyze the original screenplay again.
+
+SCREENPLAY ANALYSIS:
+{screenplay_json}
+
+Return ONLY valid JSON matching BudgetAnalysis.
+"""
+
+
 budget_agent = Agent(
     name="budget_agent",
     model=MODEL,
@@ -61,6 +80,8 @@ budget_agent = Agent(
         "Creates preliminary production budget estimates "
         "from screenplay analysis."
     ),
-    instruction=BUDGET_AGENT_INSTRUCTION,
+    instruction=_build_instruction,
     output_schema=BudgetAnalysis,
+    output_key="budget_analysis",
+    include_contents="none",
 )

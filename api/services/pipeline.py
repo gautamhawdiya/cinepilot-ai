@@ -1,17 +1,17 @@
 import asyncio
+import logging
+import os
 from pathlib import Path
 
 from google.adk.runners import Runner
 from google.adk.sessions import InMemorySessionService
+from google.adk.workflow._errors import DynamicNodeFailError
 from google.genai import types
+from pydantic import BaseModel
 
-from agents.budget.agent import budget_agent
-from agents.call_sheet.agent import call_sheet_agent
-from agents.production_plan.agent import production_plan_agent
-from agents.production_research.agent import production_research_agent
-from agents.script.agent import script_agent
-from agents.storyboard.agent import storyboard_agent
+from agents.pipeline.agent import production_pipeline_agent
 from pdf.call_sheet_pdf import generate_call_sheet_pdf
+from tools.image_generation import generate_scene_image_to_path
 from schemas.budget import BudgetAnalysis
 from schemas.call_sheet import CallSheet
 from schemas.production_plan import ProductionPlan
@@ -24,66 +24,34 @@ from api.services.project_store import project_store
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
+logger = logging.getLogger(__name__)
 
+# The image model's quota only tolerates a couple of requests in flight at
+# once (confirmed: 16 fired concurrently succeeded for only 2 -- see
+# tools/image_generation.py's retry-with-backoff, which handles the rest).
+_MAX_CONCURRENT_IMAGE_REQUESTS = 2
 
-def _clean_json(text: str) -> str:
-    value = text.strip()
-    if value.startswith("```json"):
-        value = value[len("```json"):].strip()
-    elif value.startswith("```"):
-        value = value[len("```"):].strip()
-    if value.endswith("```"):
-        value = value[:-3].strip()
-    return value
+# Each ADK agent's name maps to the pipeline stage it drives. This also
+# equals that agent's `output_key`, so ADK's own state_delta is keyed by
+# the same names as api.schemas.DEFAULT_STAGES (minus "pdf", which is a
+# deterministic render step with no agent behind it).
+_AGENT_TO_STAGE = {
+    "script_agent": "screenplay_analysis",
+    "budget_agent": "budget_analysis",
+    "production_research_agent": "production_research",
+    "production_plan_agent": "production_plan",
+    "storyboard_agent": "storyboard",
+    "call_sheet_agent": "call_sheet",
+}
 
-
-async def _run_agent(agent, prompt: str, session_suffix: str, pdf_bytes: bytes | None = None) -> str:
-    service = InMemorySessionService()
-    session_id = f"project-{session_suffix}"
-    await service.create_session(
-        app_name="cinepilot-api",
-        user_id="local_user",
-        session_id=session_id,
-    )
-
-    runner = Runner(
-        agent=agent,
-        app_name="cinepilot-api",
-        session_service=service,
-    )
-
-    parts = [types.Part(text=prompt)]
-    if pdf_bytes is not None:
-        parts.append(
-            types.Part(
-                inline_data=types.Blob(
-                    mime_type="application/pdf",
-                    data=pdf_bytes,
-                )
-            )
-        )
-
-    message = types.Content(role="user", parts=parts)
-    final_text = None
-
-    async for event in runner.run_async(
-        user_id="local_user",
-        session_id=session_id,
-        new_message=message,
-    ):
-        if not event.is_final_response():
-            continue
-        if not event.content or not event.content.parts:
-            continue
-        for part in event.content.parts:
-            if part.text:
-                final_text = part.text
-                break
-
-    if not final_text:
-        raise RuntimeError(f"{agent.name} returned no final response.")
-
-    return final_text
+_STAGE_SCHEMAS: dict[str, type[BaseModel]] = {
+    "screenplay_analysis": ScreenplayAnalysis,
+    "budget_analysis": BudgetAnalysis,
+    "production_research": ProductionResearch,
+    "production_plan": ProductionPlan,
+    "storyboard": Storyboard,
+    "call_sheet": CallSheet,
+}
 
 
 def _set_stage(project: ProjectState, name: str, status: StageStatus, error: str | None = None):
@@ -98,6 +66,17 @@ async def run_project_pipeline(project_id: str) -> None:
     if project is None:
         return
 
+    output_dir = PROJECT_ROOT / "outputs" / "projects" / project_id
+    output_dir.mkdir(parents=True, exist_ok=True)
+
+    # Stages whose agent has started but not yet reached a validated final
+    # output. Used to attribute a mid-run failure to the right stage(s) --
+    # including both sides of the budget/research pair, which run
+    # concurrently under one ADK ParallelAgent and can therefore both be
+    # in flight when a failure happens.
+    running_stages: set[str] = set()
+    validated: dict[str, BaseModel] = {}
+
     try:
         project.status = ProjectStatus.RUNNING
         project.error = None
@@ -105,219 +84,139 @@ async def run_project_pipeline(project_id: str) -> None:
 
         pdf_bytes = Path(project.screenplay_path).read_bytes()
 
-        # ------------------------------------------------------------
-        # 1. Screenplay analysis
-        # ------------------------------------------------------------
-        _set_stage(project, "screenplay_analysis", StageStatus.RUNNING)
-        script_text = await _run_agent(
-            script_agent,
-            "Analyze this screenplay PDF and return the complete screenplay analysis as JSON.",
-            f"{project_id}-script",
-            pdf_bytes,
+        session_service = InMemorySessionService()
+        session_id = f"project-{project_id}"
+        await session_service.create_session(
+            app_name="cinepilot-api",
+            user_id="local_user",
+            session_id=session_id,
         )
-        screenplay = ScreenplayAnalysis.model_validate_json(_clean_json(script_text))
-        project.title = screenplay.title
-        output_dir = PROJECT_ROOT / "outputs" / "projects" / project_id
-        output_dir.mkdir(parents=True, exist_ok=True)
-        (output_dir / "screenplay_analysis.json").write_text(
-            screenplay.model_dump_json(indent=2), encoding="utf-8"
-        )
-        _set_stage(project, "screenplay_analysis", StageStatus.COMPLETED)
-
-        # ------------------------------------------------------------
-        # 2. Budget and research are independent after screenplay.
-        # Run them concurrently to reduce total latency.
-        # ------------------------------------------------------------
-        _set_stage(project, "budget_analysis", StageStatus.RUNNING)
-        _set_stage(project, "production_research", StageStatus.RUNNING)
-
-        screenplay_json = screenplay.model_dump_json(indent=2)
-        budget_prompt = f"""
-Create a preliminary production budget using ONLY this validated screenplay analysis.
-Do not analyze the original screenplay again.
-
-SCREENPLAY ANALYSIS:
-{screenplay_json}
-
-Return ONLY valid JSON matching BudgetAnalysis.
-"""
-
-        research_prompt = f"""
-Research current real-world production constraints relevant to this screenplay.
-Use Parallel Search when external/current information is required.
-
-SCREENPLAY ANALYSIS:
-{screenplay_json}
-
-Focus only on production-relevant information such as permits, location access,
-filming restrictions, equipment restrictions, insurance/safety considerations,
-filming hours, public access, and logistics.
-Do not assume a production city that is not present in the screenplay.
-Clearly mark location-specific information that requires local verification.
-Return ONLY valid JSON matching the ProductionResearch output contract.
-"""
-
-        budget_task = _run_agent(budget_agent, budget_prompt, f"{project_id}-budget")
-        research_task = _run_agent(production_research_agent, research_prompt, f"{project_id}-research")
-        budget_text, research_text = await asyncio.gather(
-            budget_task, research_task, return_exceptions=True
+        runner = Runner(
+            agent=production_pipeline_agent,
+            app_name="cinepilot-api",
+            session_service=session_service,
         )
 
-        budget_error: Exception | None = (
-            budget_text if isinstance(budget_text, Exception) else None
+        message = types.Content(
+            role="user",
+            parts=[
+                types.Part(
+                    text=(
+                        "Analyze this screenplay PDF and produce the full "
+                        "CinePilot production package."
+                    )
+                ),
+                types.Part(
+                    inline_data=types.Blob(
+                        mime_type="application/pdf",
+                        data=pdf_bytes,
+                    )
+                ),
+            ],
         )
-        research_error: Exception | None = (
-            research_text if isinstance(research_text, Exception) else None
-        )
 
-        budget: BudgetAnalysis | None = None
-        if budget_error is None:
-            try:
-                budget = BudgetAnalysis.model_validate_json(_clean_json(budget_text))
-            except Exception as exc:
-                budget_error = exc
+        async for event in runner.run_async(
+            user_id="local_user",
+            session_id=session_id,
+            new_message=message,
+        ):
+            stage = _AGENT_TO_STAGE.get(event.author)
+            if stage is None:
+                continue
 
-        research: ProductionResearch | None = None
-        if research_error is None:
-            try:
-                research = ProductionResearch.model_validate_json(_clean_json(research_text))
-            except Exception as exc:
-                research_error = exc
+            if stage not in running_stages and project.stages[stage].status != StageStatus.COMPLETED:
+                running_stages.add(stage)
+                _set_stage(project, stage, StageStatus.RUNNING)
 
-        # These two stages share no ordering, so a failure in either must be
-        # attributed to the stage that actually failed, and the sibling must
-        # not be left stuck at "running" forever just because the pipeline
-        # aborts before it gets a chance to reach "completed".
-        if budget_error is not None or research_error is not None:
-            if budget_error is not None:
-                _set_stage(project, "budget_analysis", StageStatus.FAILED, str(budget_error))
-            else:
-                _set_stage(
-                    project,
-                    "budget_analysis",
-                    StageStatus.FAILED,
-                    "Aborted: production_research failed.",
-                )
+            if not event.is_final_response():
+                continue
+            if not event.actions or not event.actions.state_delta:
+                continue
+            if stage not in event.actions.state_delta:
+                continue
 
-            if research_error is not None:
-                _set_stage(project, "production_research", StageStatus.FAILED, str(research_error))
-            else:
-                _set_stage(
-                    project,
-                    "production_research",
-                    StageStatus.FAILED,
-                    "Aborted: budget_analysis failed.",
-                )
+            schema = _STAGE_SCHEMAS[stage]
+            model = schema.model_validate(event.actions.state_delta[stage])
+            validated[stage] = model
 
-            project.current_stage = None
-            project.status = ProjectStatus.FAILED
-            project.error = "; ".join(
-                str(err) for err in (budget_error, research_error) if err is not None
+            if stage == "screenplay_analysis":
+                project.title = model.title
+
+            (output_dir / f"{stage}.json").write_text(
+                model.model_dump_json(indent=2), encoding="utf-8"
             )
-            project_store.update(project)
-            return
-
-        research_json = research.model_dump_json(indent=2)
-
-        (output_dir / "budget_analysis.json").write_text(
-            budget.model_dump_json(indent=2), encoding="utf-8"
-        )
-        (output_dir / "production_research.json").write_text(
-            research_json, encoding="utf-8"
-        )
-        _set_stage(project, "budget_analysis", StageStatus.COMPLETED)
-        _set_stage(project, "production_research", StageStatus.COMPLETED)
+            running_stages.discard(stage)
+            _set_stage(project, stage, StageStatus.COMPLETED)
 
         # ------------------------------------------------------------
-        # 3. Production plan
+        # Storyboard preview images: one representative image per scene
+        # (its first shot's image prompt), not one per shot. Real quota
+        # testing showed the image model's rate limit is strict enough
+        # that even with retry-with-backoff and bounded concurrency,
+        # one-per-shot pushed a 16-shot pipeline run past 9 minutes for
+        # this stage alone with several permanent failures. One-per-scene
+        # keeps runs fast and reliable while still proving the capability
+        # with a real generated image. This is a plain Gemini call, not
+        # agentic reasoning, so it's a Python step rather than an ADK
+        # agent. Enhancement only: a failure here must not block the call
+        # sheet or PDF, which are already validated and complete by now.
         # ------------------------------------------------------------
-        _set_stage(project, "production_plan", StageStatus.RUNNING)
-        plan_prompt = f"""
-Create the practical production plan from these validated inputs.
+        _set_stage(project, "storyboard_images", StageStatus.RUNNING)
+        storyboard = validated["storyboard"]
 
-SCREENPLAY ANALYSIS:
-{screenplay_json}
+        images_enabled = os.environ.get(
+            "ENABLE_STORYBOARD_IMAGES", "true"
+        ).strip().lower() not in {"0", "false", "no"}
 
-BUDGET ANALYSIS:
-{budget.model_dump_json(indent=2)}
+        if not images_enabled:
+            logger.info("Storyboard image generation disabled via ENABLE_STORYBOARD_IMAGES.")
+            _set_stage(project, "storyboard_images", StageStatus.COMPLETED)
+        else:
+            image_semaphore = asyncio.Semaphore(_MAX_CONCURRENT_IMAGE_REQUESTS)
 
-PRODUCTION RESEARCH:
-{research_json}
+            async def _generate_one_image(scene_number: int, shot_number: int, prompt: str):
+                async with image_semaphore:
+                    return await asyncio.to_thread(
+                        generate_scene_image_to_path,
+                        prompt,
+                        output_dir
+                        / "storyboard_images"
+                        / f"scene_{scene_number:02d}_shot_{shot_number:02d}.png",
+                    )
 
-Use the research as evidence, preserving source URLs and verification requirements.
-Do not invent prices, availability, locations, vendors, permits, or regulations.
-Return ONLY valid JSON matching ProductionPlan.
-"""
-        plan_text = await _run_agent(
-            production_plan_agent, plan_prompt, f"{project_id}-plan"
-        )
-        production_plan = ProductionPlan.model_validate_json(_clean_json(plan_text))
-        (output_dir / "production_plan.json").write_text(
-            production_plan.model_dump_json(indent=2), encoding="utf-8"
-        )
-        _set_stage(project, "production_plan", StageStatus.COMPLETED)
+            image_tasks = [
+                _generate_one_image(
+                    scene.scene_number, scene.shots[0].shot_number, scene.shots[0].image_prompt
+                )
+                for scene in storyboard.scenes
+                if scene.shots
+            ]
+            image_results = await asyncio.gather(*image_tasks, return_exceptions=True)
 
-        # ------------------------------------------------------------
-        # 4. Storyboard
-        # ------------------------------------------------------------
-        _set_stage(project, "storyboard", StageStatus.RUNNING)
-        storyboard_prompt = f"""
-Create a cinematic, production-ready storyboard from the validated screenplay analysis
-and production plan below.
+            generated_count = sum(
+                1 for result in image_results if not isinstance(result, Exception)
+            )
+            last_image_error = None
+            for result in image_results:
+                if isinstance(result, Exception):
+                    logger.warning("Storyboard image generation failed: %s", result)
+                    last_image_error = str(result)
 
-SCREENPLAY ANALYSIS:
-{screenplay_json}
-
-PRODUCTION PLAN:
-{production_plan.model_dump_json(indent=2)}
-
-Stay faithful to screenplay events and preserve recorded/future/video media boundaries.
-Return ONLY valid JSON matching Storyboard.
-"""
-        storyboard_text = await _run_agent(
-            storyboard_agent, storyboard_prompt, f"{project_id}-storyboard"
-        )
-        storyboard = Storyboard.model_validate_json(_clean_json(storyboard_text))
-        (output_dir / "storyboard.json").write_text(
-            storyboard.model_dump_json(indent=2), encoding="utf-8"
-        )
-        _set_stage(project, "storyboard", StageStatus.COMPLETED)
-
-        # ------------------------------------------------------------
-        # 5. Call sheet
-        # ------------------------------------------------------------
-        _set_stage(project, "call_sheet", StageStatus.RUNNING)
-        call_prompt = f"""
-Create the production call sheet from these validated inputs.
-
-SCREENPLAY ANALYSIS:
-{screenplay_json}
-
-PRODUCTION PLAN:
-{production_plan.model_dump_json(indent=2)}
-
-STORYBOARD:
-{storyboard.model_dump_json(indent=2)}
-
-PRODUCTION RESEARCH:
-{research_json}
-
-Never invent dates, locations, people, story events, vendors, or unsupported rules.
-Return ONLY valid JSON matching CallSheet.
-"""
-        call_text = await _run_agent(
-            call_sheet_agent, call_prompt, f"{project_id}-call-sheet"
-        )
-        call_sheet = CallSheet.model_validate_json(_clean_json(call_text))
-        (output_dir / "call_sheet.json").write_text(
-            call_sheet.model_dump_json(indent=2), encoding="utf-8"
-        )
-        _set_stage(project, "call_sheet", StageStatus.COMPLETED)
+            if generated_count > 0:
+                _set_stage(project, "storyboard_images", StageStatus.COMPLETED)
+            else:
+                _set_stage(
+                    project,
+                    "storyboard_images",
+                    StageStatus.FAILED,
+                    last_image_error or "No storyboard images could be generated.",
+                )
 
         # ------------------------------------------------------------
-        # 6. PDF renderer is deterministic; no LLM call.
+        # PDF renderer is deterministic; no LLM call.
         # ------------------------------------------------------------
         _set_stage(project, "pdf", StageStatus.RUNNING)
+        call_sheet = validated["call_sheet"]
         pdf_path = output_dir / "call_sheet.pdf"
         generate_call_sheet_pdf(call_sheet, pdf_path)
         _set_stage(project, "pdf", StageStatus.COMPLETED)
@@ -328,12 +227,38 @@ Return ONLY valid JSON matching CallSheet.
 
     except Exception as exc:
         project = project_store.get(project_id) or project
-        failed_stage = project.current_stage
-        if failed_stage and failed_stage in project.stages:
-            project.stages[failed_stage].status = StageStatus.FAILED
-            project.stages[failed_stage].error = str(exc)
+
+        # ADK wraps a failing agent's error in DynamicNodeFailError, whose
+        # message names the failing node and whose .error carries the real
+        # underlying exception -- giving precise per-agent attribution even
+        # when the failure happened inside a concurrent ParallelAgent group.
+        culprit_stage = None
+        for agent_name, stage_name in _AGENT_TO_STAGE.items():
+            if agent_name in str(exc):
+                culprit_stage = stage_name
+                break
+
+        underlying = exc.error if isinstance(exc, DynamicNodeFailError) else exc
+        message = str(underlying)
+
+        stages_to_fail = set(running_stages)
+        if culprit_stage:
+            stages_to_fail.add(culprit_stage)
+        if not stages_to_fail:
+            stages_to_fail.add(project.current_stage or "pdf")
+
+        for stage_name in stages_to_fail:
+            if stage_name not in project.stages:
+                continue
+            if stage_name == culprit_stage or culprit_stage is None:
+                stage_message = message
+            else:
+                stage_message = f"Aborted: {culprit_stage} failed."
+            _set_stage(project, stage_name, StageStatus.FAILED, stage_message)
+
+        project.current_stage = None
         project.status = ProjectStatus.FAILED
-        project.error = str(exc)
+        project.error = message
         project_store.update(project)
 
 

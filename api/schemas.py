@@ -29,6 +29,7 @@ DEFAULT_STAGES = (
     "production_plan",
     "storyboard",
     "call_sheet",
+    "storyboard_images",
     "pdf",
 )
 

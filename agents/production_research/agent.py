@@ -1,4 +1,7 @@
+import json
+
 from google.adk.agents import LlmAgent
+from google.adk.agents.readonly_context import ReadonlyContext
 
 from tools.parallel_search import parallel_search
 from schemas.production_research import ProductionResearch
@@ -101,6 +104,27 @@ Do not provide explanations outside the JSON.
 """
 
 
+def _build_instruction(context: ReadonlyContext) -> str:
+    screenplay_json = json.dumps(
+        context.state.get("screenplay_analysis", {}), indent=2
+    )
+    return f"""{PRODUCTION_RESEARCH_INSTRUCTION}
+
+Research current real-world production constraints relevant to this screenplay.
+Use Parallel Search when external/current information is required.
+
+SCREENPLAY ANALYSIS:
+{screenplay_json}
+
+Focus only on production-relevant information such as permits, location access,
+filming restrictions, equipment restrictions, insurance/safety considerations,
+filming hours, public access, and logistics.
+Do not assume a production city that is not present in the screenplay.
+Clearly mark location-specific information that requires local verification.
+Return ONLY valid JSON matching the ProductionResearch output contract.
+"""
+
+
 production_research_agent = LlmAgent(
     name="production_research_agent",
     model="gemini-2.5-flash",
@@ -108,9 +132,11 @@ production_research_agent = LlmAgent(
         "Researches current real-world production "
         "constraints using Parallel Search."
     ),
-    instruction=PRODUCTION_RESEARCH_INSTRUCTION,
+    instruction=_build_instruction,
     tools=[
         parallel_search,
     ],
     output_schema=ProductionResearch,
+    output_key="production_research",
+    include_contents="none",
 )

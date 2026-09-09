@@ -5,6 +5,7 @@ pydantic>=2.12,<3
 
 requests
 parallel-web>=1.0,<2
+truststore>=0.9,<1; sys_platform == "win32"
 
 fastapi>=0.115,<1
 uvicorn[standard]>=0.34,<1

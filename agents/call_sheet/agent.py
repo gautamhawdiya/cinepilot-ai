@@ -1,4 +1,7 @@
+import json
+
 from google.adk.agents import LlmAgent
+from google.adk.agents.readonly_context import ReadonlyContext
 
 from schemas.call_sheet import CallSheet
 
@@ -385,6 +388,38 @@ Return ONLY the JSON object matching CallSheet.
 """
 
 
+def _build_instruction(context: ReadonlyContext) -> str:
+    screenplay_json = json.dumps(
+        context.state.get("screenplay_analysis", {}), indent=2
+    )
+    production_plan_json = json.dumps(
+        context.state.get("production_plan", {}), indent=2
+    )
+    storyboard_json = json.dumps(context.state.get("storyboard", {}), indent=2)
+    research_json = json.dumps(
+        context.state.get("production_research", {}), indent=2
+    )
+    return f"""{CALL_SHEET_INSTRUCTION}
+
+Create the production call sheet from these validated inputs.
+
+SCREENPLAY ANALYSIS:
+{screenplay_json}
+
+PRODUCTION PLAN:
+{production_plan_json}
+
+STORYBOARD:
+{storyboard_json}
+
+PRODUCTION RESEARCH:
+{research_json}
+
+Never invent dates, locations, people, story events, vendors, or unsupported rules.
+Return ONLY valid JSON matching CallSheet.
+"""
+
+
 call_sheet_agent = LlmAgent(
     name="call_sheet_agent",
     model="gemini-2.5-flash",
@@ -393,8 +428,10 @@ call_sheet_agent = LlmAgent(
         "screenplay, production plan, storyboard, "
         "and external production research."
     ),
-    instruction=CALL_SHEET_INSTRUCTION,
+    instruction=_build_instruction,
 
     # Structured output contract.
     output_schema=CallSheet,
+    output_key="call_sheet",
+    include_contents="none",
 )

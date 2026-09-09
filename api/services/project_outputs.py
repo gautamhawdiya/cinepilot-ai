@@ -90,3 +90,37 @@ def get_call_sheet_pdf_path(project_id: str) -> Path:
         raise FileNotFoundError(pdf_path)
 
     return pdf_path
+
+
+def list_storyboard_images(project_id: str) -> list[tuple[int, int]]:
+    """Return the (scene_number, shot_number) pairs that have a generated
+    storyboard preview image, sorted ascending. Empty if none were
+    generated (e.g. image generation failed, or the project hasn't reached
+    that stage yet)."""
+    images_dir = PROJECT_OUTPUT_ROOT / project_id / "storyboard_images"
+    if not images_dir.is_dir():
+        return []
+
+    pairs = []
+    for path in images_dir.glob("scene_*_shot_*.png"):
+        parts = path.stem.split("_")
+        if len(parts) == 4 and parts[1].isdigit() and parts[3].isdigit():
+            pairs.append((int(parts[1]), int(parts[3])))
+
+    return sorted(pairs)
+
+
+def get_storyboard_image_path(
+    project_id: str, scene_number: int, shot_number: int
+) -> Path:
+    """Return the path to one shot's generated storyboard preview image."""
+    image_path = (
+        PROJECT_OUTPUT_ROOT
+        / project_id
+        / "storyboard_images"
+        / f"scene_{scene_number:02d}_shot_{shot_number:02d}.png"
+    )
+    if not image_path.is_file():
+        raise FileNotFoundError(image_path)
+
+    return image_path

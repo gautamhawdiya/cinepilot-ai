@@ -94,4 +94,6 @@ script_agent = Agent(
     ),
     instruction=SCRIPT_AGENT_INSTRUCTION,
     output_schema=ScreenplayAnalysis,
+    output_key="screenplay_analysis",
+    include_contents="none",
 )

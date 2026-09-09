@@ -220,6 +220,7 @@ const STAGE_LABELS: Record<string, string> = {
   production_plan: "Production Plan",
   storyboard: "Storyboard",
   call_sheet: "Call Sheet",
+  storyboard_images: "Storyboard Images",
   pdf: "PDF",
 };
 
@@ -233,6 +234,7 @@ const STAGE_AGENTS: Record<string, string> = {
   production_plan: "production_plan_agent",
   storyboard: "storyboard_agent",
   call_sheet: "call_sheet_agent",
+  storyboard_images: "Gemini image generation (one per scene)",
   pdf: "Deterministic renderer (no LLM call)",
 };
 
@@ -243,8 +245,45 @@ const STAGE_ORDER = [
   "production_plan",
   "storyboard",
   "call_sheet",
+  "storyboard_images",
   "pdf",
 ];
+
+// The pipeline-progress grid shows "storyboard" and "storyboard_images" as one
+// card -- image generation is a follow-on step of the same storyboard stage,
+// not a separate agent the user needs to track independently.
+const DISPLAY_STAGE_ORDER = [
+  "screenplay_analysis",
+  "budget_analysis",
+  "production_research",
+  "production_plan",
+  "storyboard",
+  "call_sheet",
+  "pdf",
+];
+
+type StageStatusValue = "pending" | "running" | "completed" | "failed";
+
+function combineStageStatus(
+  a: StageStatusValue,
+  b: StageStatusValue,
+): StageStatusValue {
+  if (a === "failed" || b === "failed") return "failed";
+  if (a === "completed" && b === "completed") return "completed";
+  if (a === "pending" && b === "pending") return "pending";
+  return "running";
+}
+
+// Which output tab depends on which backend stage being complete before its
+// data can be fetched and its tab unlocked.
+const OUTPUT_STAGE: Record<OutputView, string> = {
+  screenplay: "screenplay_analysis",
+  budget: "budget_analysis",
+  research: "production_research",
+  plan: "production_plan",
+  storyboard: "storyboard",
+  "call-sheet": "call_sheet",
+};
 
 function App() {
   const [file, setFile] = useState<File | null>(null);
@@ -273,6 +312,9 @@ function App() {
   const [storyboard, setStoryboard] = useState<Storyboard | null>(null);
   const [isStoryboardLoading, setIsStoryboardLoading] = useState(false);
   const [storyboardError, setStoryboardError] = useState<string | null>(null);
+  const [storyboardImages, setStoryboardImages] = useState<
+    Record<string, string>
+  >({});
   const [callSheet, setCallSheet] = useState<CallSheet | null>(null);
   const [isCallSheetLoading, setIsCallSheetLoading] = useState(false);
   const [callSheetError, setCallSheetError] = useState<string | null>(null);
@@ -284,6 +326,28 @@ function App() {
   const isRunning = project?.status === "running";
   const isCompleted = project?.status === "completed";
   const isFailed = project?.status === "failed";
+
+  // Each output tab unlocks as soon as its own stage finishes, rather than
+  // waiting for the entire pipeline -- so the demo reveals real agent
+  // output live instead of gating everything behind one final reveal.
+  const stageReady = (stage: string) =>
+    project?.stages[stage]?.status === "completed";
+
+  const isScreenplayReady = stageReady(OUTPUT_STAGE.screenplay);
+  const isBudgetReady = stageReady(OUTPUT_STAGE.budget);
+  const isResearchReady = stageReady(OUTPUT_STAGE.research);
+  const isPlanReady = stageReady(OUTPUT_STAGE.plan);
+  const isStoryboardReady = stageReady(OUTPUT_STAGE.storyboard);
+  const isStoryboardImagesReady = stageReady("storyboard_images");
+  const isCallSheetReady = stageReady(OUTPUT_STAGE["call-sheet"]);
+
+  const anyOutputReady =
+    isScreenplayReady ||
+    isBudgetReady ||
+    isResearchReady ||
+    isPlanReady ||
+    isStoryboardReady ||
+    isCallSheetReady;
 
   useEffect(() => {
     if (!project?.project_id || !isRunning) {
@@ -318,7 +382,7 @@ function App() {
   }, [project?.project_id, isRunning]);
 
   useEffect(() => {
-    if (!project?.project_id || !isCompleted) {
+    if (!project?.project_id || !isScreenplayReady) {
       return;
     }
 
@@ -361,10 +425,10 @@ function App() {
     return () => {
       cancelled = true;
     };
-  }, [project?.project_id, isCompleted]);
+  }, [project?.project_id, isScreenplayReady]);
 
   useEffect(() => {
-    if (!project?.project_id || !isCompleted) {
+    if (!project?.project_id || !isBudgetReady) {
       return;
     }
 
@@ -407,10 +471,10 @@ function App() {
     return () => {
       cancelled = true;
     };
-  }, [project?.project_id, isCompleted]);
+  }, [project?.project_id, isBudgetReady]);
 
   useEffect(() => {
-    if (!project?.project_id || !isCompleted) {
+    if (!project?.project_id || !isResearchReady) {
       return;
     }
 
@@ -455,10 +519,10 @@ function App() {
     return () => {
       cancelled = true;
     };
-  }, [project?.project_id, isCompleted]);
+  }, [project?.project_id, isResearchReady]);
 
   useEffect(() => {
-    if (!project?.project_id || !isCompleted) {
+    if (!project?.project_id || !isCallSheetReady) {
       return;
     }
 
@@ -501,10 +565,10 @@ function App() {
     return () => {
       cancelled = true;
     };
-  }, [project?.project_id, isCompleted]);
+  }, [project?.project_id, isCallSheetReady]);
 
   useEffect(() => {
-    if (!project?.project_id || !isCompleted) {
+    if (!project?.project_id || !isStoryboardReady) {
       return;
     }
 
@@ -547,10 +611,54 @@ function App() {
     return () => {
       cancelled = true;
     };
-  }, [project?.project_id, isCompleted]);
+  }, [project?.project_id, isStoryboardReady]);
 
   useEffect(() => {
-    if (!project?.project_id || !isCompleted) {
+    if (!project?.project_id || !isStoryboardImagesReady) {
+      return;
+    }
+
+    let cancelled = false;
+
+    const loadStoryboardImages = async () => {
+      try {
+        const response = await fetch(
+          `${API_BASE}/api/projects/${project.project_id}/storyboard/images`,
+        );
+
+        if (!response.ok) {
+          return;
+        }
+
+        const result: Array<{
+          scene_number: number;
+          shot_number: number;
+          url: string;
+        }> = await response.json();
+
+        if (!cancelled) {
+          const byShot: Record<string, string> = {};
+          for (const entry of result) {
+            byShot[`${entry.scene_number}-${entry.shot_number}`] =
+              `${API_BASE}${entry.url}`;
+          }
+          setStoryboardImages(byShot);
+        }
+      } catch {
+        // Storyboard images are an enhancement, not a required output --
+        // fail silently and keep showing the honest "Planning frame".
+      }
+    };
+
+    void loadStoryboardImages();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [project?.project_id, isStoryboardImagesReady]);
+
+  useEffect(() => {
+    if (!project?.project_id || !isPlanReady) {
       return;
     }
 
@@ -593,7 +701,7 @@ function App() {
     return () => {
       cancelled = true;
     };
-  }, [project?.project_id, isCompleted]);
+  }, [project?.project_id, isPlanReady]);
 
   const selectFile = (selectedFile: File | null) => {
     setError(null);
@@ -693,6 +801,7 @@ function App() {
     setStoryboard(null);
     setStoryboardError(null);
     setIsStoryboardLoading(false);
+    setStoryboardImages({});
     setCallSheet(null);
     setCallSheetError(null);
     setIsCallSheetLoading(false);
@@ -895,12 +1004,30 @@ function App() {
             </div>
 
             <div className="pipeline-grid">
-              {STAGE_ORDER.map((stage, index) => {
-                const stageData =
-                  project.stages[stage];
+              {DISPLAY_STAGE_ORDER.map((stage, index) => {
+                const stageData = project.stages[stage];
+                const imagesData =
+                  stage === "storyboard"
+                    ? project.stages["storyboard_images"]
+                    : undefined;
 
-                const status =
-                  stageData?.status ?? "pending";
+                const status = imagesData
+                  ? combineStageStatus(
+                      stageData?.status ?? "pending",
+                      imagesData.status ?? "pending",
+                    )
+                  : (stageData?.status ?? "pending");
+
+                const agentLabel = imagesData
+                  ? `${STAGE_AGENTS[stage]} + ${STAGE_AGENTS["storyboard_images"]}`
+                  : STAGE_AGENTS[stage];
+
+                const stageError =
+                  stageData?.status === "failed"
+                    ? stageData.error
+                    : imagesData?.status === "failed"
+                      ? imagesData.error
+                      : null;
 
                 return (
                   <div
@@ -924,11 +1051,10 @@ function App() {
                       </div>
 
                       <div className="stage-status">
-                        {status === "completed" &&
-                          `Completed · ${STAGE_AGENTS[stage]}`}
+                        {status === "completed" && "Completed"}
 
                         {status === "running" &&
-                          `Processing · ${STAGE_AGENTS[stage]}`}
+                          `Processing · ${agentLabel}`}
 
                         {status === "pending" &&
                           "Waiting"}
@@ -937,12 +1063,11 @@ function App() {
                           "Failed"}
                       </div>
 
-                      {status === "failed" &&
-                        stageData.error && (
-                          <div className="stage-error">
-                            {stageData.error}
-                          </div>
-                        )}
+                      {status === "failed" && stageError && (
+                        <div className="stage-error">
+                          {stageError}
+                        </div>
+                      )}
                     </div>
                   </div>
                 );
@@ -981,7 +1106,7 @@ function App() {
               </div>
             )}
 
-            {isCompleted && (
+            {anyOutputReady && (
               <nav
                 className="output-navigation"
                 id="production-outputs"
@@ -990,6 +1115,7 @@ function App() {
                 <button
                   className={activeOutput === "screenplay" ? "active" : ""}
                   onClick={() => setActiveOutput("screenplay")}
+                  disabled={!isScreenplayReady}
                   type="button"
                 >
                   Screenplay Analysis
@@ -997,6 +1123,7 @@ function App() {
                 <button
                   className={activeOutput === "budget" ? "active" : ""}
                   onClick={() => setActiveOutput("budget")}
+                  disabled={!isBudgetReady}
                   type="button"
                 >
                   Budget
@@ -1004,6 +1131,7 @@ function App() {
                 <button
                   className={activeOutput === "research" ? "active" : ""}
                   onClick={() => setActiveOutput("research")}
+                  disabled={!isResearchReady}
                   type="button"
                 >
                   Research
@@ -1011,6 +1139,7 @@ function App() {
                 <button
                   className={activeOutput === "plan" ? "active" : ""}
                   onClick={() => setActiveOutput("plan")}
+                  disabled={!isPlanReady}
                   type="button"
                 >
                   Production Plan
@@ -1018,6 +1147,7 @@ function App() {
                 <button
                   className={activeOutput === "storyboard" ? "active" : ""}
                   onClick={() => setActiveOutput("storyboard")}
+                  disabled={!isStoryboardReady}
                   type="button"
                 >
                   Storyboard
@@ -1025,6 +1155,7 @@ function App() {
                 <button
                   className={activeOutput === "call-sheet" ? "active" : ""}
                   onClick={() => setActiveOutput("call-sheet")}
+                  disabled={!isCallSheetReady}
                   type="button"
                 >
                   Call Sheet
@@ -1032,7 +1163,7 @@ function App() {
               </nav>
             )}
 
-            {isCompleted && activeOutput === "screenplay" && (
+            {isScreenplayReady && activeOutput === "screenplay" && (
               <section className="research-section" id="screenplay-analysis">
                 <div className="research-header">
                   <div>
@@ -1180,7 +1311,7 @@ function App() {
               </section>
             )}
 
-            {isCompleted && activeOutput === "budget" && (
+            {isBudgetReady && activeOutput === "budget" && (
               <section className="plan-section" id="budget-analysis">
                 <div className="plan-header">
                   <div>
@@ -1283,7 +1414,7 @@ function App() {
               </section>
             )}
 
-            {isCompleted && activeOutput === "research" && (
+            {isResearchReady && activeOutput === "research" && (
               <section
                 className="research-section"
                 id="production-research"
@@ -1399,7 +1530,7 @@ function App() {
               </section>
             )}
 
-            {isCompleted && activeOutput === "plan" && (
+            {isPlanReady && activeOutput === "plan" && (
               <section className="plan-section" id="production-plan">
                 <div className="plan-header">
                   <div>
@@ -1595,7 +1726,7 @@ function App() {
               </section>
             )}
 
-            {isCompleted && activeOutput === "storyboard" && (
+            {isStoryboardReady && activeOutput === "storyboard" && (
               <section className="storyboard-section" id="storyboard">
                 <div className="storyboard-header">
                   <div>
@@ -1694,7 +1825,13 @@ function App() {
                           </div>
 
                           <div className="storyboard-shot-grid">
-                            {scene.shots.map((shot) => (
+                            {scene.shots.map((shot) => {
+                              const generatedImageUrl =
+                                storyboardImages[
+                                  `${scene.scene_number}-${shot.shot_number}`
+                                ];
+
+                              return (
                               <article
                                 className="storyboard-shot"
                                 key={`${scene.scene_number}-${shot.shot_number}`}
@@ -1703,10 +1840,17 @@ function App() {
                                   <div className="frame-label">
                                     SC {formatNumber(scene.scene_number)} · SH {formatNumber(shot.shot_number)}
                                   </div>
-                                  <div className="frame-content">
-                                    <strong>SHOT {formatNumber(shot.shot_number)}</strong>
-                                    <span>Planning frame</span>
-                                  </div>
+                                  {generatedImageUrl ? (
+                                    <img
+                                      src={generatedImageUrl}
+                                      alt={`Generated preview for scene ${scene.scene_number}`}
+                                    />
+                                  ) : (
+                                    <div className="frame-content">
+                                      <strong>SHOT {formatNumber(shot.shot_number)}</strong>
+                                      <span>Planning frame</span>
+                                    </div>
+                                  )}
                                   <div className="frame-subject">{shot.subject}</div>
                                 </div>
 
@@ -1766,7 +1910,8 @@ function App() {
                                   </details>
                                 </div>
                               </article>
-                            ))}
+                              );
+                            })}
                           </div>
                         </article>
                       ))}
@@ -1776,7 +1921,7 @@ function App() {
               </section>
             )}
 
-            {isCompleted && activeOutput === "call-sheet" && (
+            {isCallSheetReady && activeOutput === "call-sheet" && (
               <section className="call-sheet-section" id="call-sheet">
                 <div className="call-sheet-header">
                   <div>

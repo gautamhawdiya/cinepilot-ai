@@ -1,16 +1,12 @@
+import json
+
 from google.adk.agents import LlmAgent
+from google.adk.agents.readonly_context import ReadonlyContext
 
 from schemas.storyboard import Storyboard
 
 
-storyboard_agent = LlmAgent(
-    name="storyboard_agent",
-    model="gemini-2.5-flash",
-    description=(
-        "Creates a cinematic storyboard and shot plan "
-        "from screenplay and production planning data."
-    ),
-    instruction="""
+STORYBOARD_AGENT_INSTRUCTION = """
 You are the Storyboard Director for CinePilot AI.
 
 Your task is to transform a screenplay into a
@@ -252,6 +248,41 @@ G. Does every screenplay scene have at least one shot?
 H. Does total_shots equal the number of generated shots?
 
 Return only the requested JSON.
-""",
+"""
+
+
+def _build_instruction(context: ReadonlyContext) -> str:
+    screenplay_json = json.dumps(
+        context.state.get("screenplay_analysis", {}), indent=2
+    )
+    production_plan_json = json.dumps(
+        context.state.get("production_plan", {}), indent=2
+    )
+    return f"""{STORYBOARD_AGENT_INSTRUCTION}
+
+Create a cinematic, production-ready storyboard from the validated screenplay analysis
+and production plan below.
+
+SCREENPLAY ANALYSIS:
+{screenplay_json}
+
+PRODUCTION PLAN:
+{production_plan_json}
+
+Stay faithful to screenplay events and preserve recorded/future/video media boundaries.
+Return ONLY valid JSON matching Storyboard.
+"""
+
+
+storyboard_agent = LlmAgent(
+    name="storyboard_agent",
+    model="gemini-2.5-flash",
+    description=(
+        "Creates a cinematic storyboard and shot plan "
+        "from screenplay and production planning data."
+    ),
+    instruction=_build_instruction,
     output_schema=Storyboard,
+    output_key="storyboard",
+    include_contents="none",
 )

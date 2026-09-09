@@ -1,17 +1,12 @@
+import json
+
 from google.adk.agents import LlmAgent
+from google.adk.agents.readonly_context import ReadonlyContext
 
 from schemas.production_plan import ProductionPlan
 
 
-production_plan_agent = LlmAgent(
-    name="production_plan_agent",
-    model="gemini-2.5-flash",
-    description=(
-        "Creates a production strategy by combining "
-        "screenplay analysis, budget analysis and "
-        "real-world production research."
-    ),
-    instruction="""
+PRODUCTION_PLAN_INSTRUCTION = """
 You are the Production Planning Agent for CinePilot AI.
 
 Your job is to convert screenplay analysis, budget
@@ -63,6 +58,46 @@ include the source URL.
 
 Return ONLY valid JSON matching the
 ProductionPlan schema.
-""",
+"""
+
+
+def _build_instruction(context: ReadonlyContext) -> str:
+    screenplay_json = json.dumps(
+        context.state.get("screenplay_analysis", {}), indent=2
+    )
+    budget_json = json.dumps(context.state.get("budget_analysis", {}), indent=2)
+    research_json = json.dumps(
+        context.state.get("production_research", {}), indent=2
+    )
+    return f"""{PRODUCTION_PLAN_INSTRUCTION}
+
+Create the practical production plan from these validated inputs.
+
+SCREENPLAY ANALYSIS:
+{screenplay_json}
+
+BUDGET ANALYSIS:
+{budget_json}
+
+PRODUCTION RESEARCH:
+{research_json}
+
+Use the research as evidence, preserving source URLs and verification requirements.
+Do not invent prices, availability, locations, vendors, permits, or regulations.
+Return ONLY valid JSON matching ProductionPlan.
+"""
+
+
+production_plan_agent = LlmAgent(
+    name="production_plan_agent",
+    model="gemini-2.5-flash",
+    description=(
+        "Creates a production strategy by combining "
+        "screenplay analysis, budget analysis and "
+        "real-world production research."
+    ),
+    instruction=_build_instruction,
     output_schema=ProductionPlan,
+    output_key="production_plan",
+    include_contents="none",
 )

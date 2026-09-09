@@ -9,6 +9,8 @@ from api.schemas import ProjectState, ProjectStatus
 from api.services.pipeline import start_project_pipeline
 from api.services.project_outputs import (
     get_call_sheet_pdf_path,
+    get_storyboard_image_path,
+    list_storyboard_images,
     load_budget_analysis,
     load_call_sheet,
     load_production_plan,
@@ -173,6 +175,49 @@ async def get_project_storyboard(project_id: str):
         raise HTTPException(
             500, "Stored storyboard failed validation."
         ) from exc
+
+
+@router.get("/{project_id}/storyboard/images")
+async def get_project_storyboard_images(project_id: str):
+    project = project_store.get(project_id)
+    if project is None:
+        raise HTTPException(404, "Project not found.")
+
+    pairs = list_storyboard_images(project_id)
+    return [
+        {
+            "scene_number": scene_number,
+            "shot_number": shot_number,
+            "url": (
+                f"/api/projects/{project_id}/storyboard/images/"
+                f"{scene_number}/{shot_number}"
+            ),
+        }
+        for scene_number, shot_number in pairs
+    ]
+
+
+@router.get(
+    "/{project_id}/storyboard/images/{scene_number}/{shot_number}",
+    response_class=FileResponse,
+)
+async def get_project_storyboard_image(
+    project_id: str, scene_number: int, shot_number: int
+):
+    project = project_store.get(project_id)
+    if project is None:
+        raise HTTPException(404, "Project not found.")
+
+    try:
+        image_path = get_storyboard_image_path(
+            project_id, scene_number, shot_number
+        )
+    except FileNotFoundError as exc:
+        raise HTTPException(
+            404, "No generated image is available for this shot."
+        ) from exc
+
+    return FileResponse(path=image_path, media_type="image/png")
 
 
 @router.get("/{project_id}/call-sheet", response_model=CallSheet)
