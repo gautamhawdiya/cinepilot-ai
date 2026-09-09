@@ -26,12 +26,42 @@ Budget Analysis                    ∥         (Parallel Search tool)
                     Call Sheet
                         ↓  deterministic ReportLab render
               Call Sheet PDF / Production Package
+
+  ┌─ producer changes a constraint ──────────────────┐
+  │  "single location" / "cut budget 30%" / "3 days" │
+  └──→ re-runs Production Plan → Storyboard → Call Sheet
+       (screenplay analysis, budget and research reused)
 ```
 
 Every agent output is validated against a Pydantic schema before it becomes
 part of the project's persisted state — an agent producing malformed or
 schema-invalid JSON fails that project's pipeline run rather than silently
 becoming "the truth."
+
+## Producer-in-the-loop re-planning
+
+Real production planning is a negotiation, not a one-shot answer. Once a
+package exists, a producer can impose a new constraint — *"use a single
+location"*, *"cut the budget by 30%"*, *"shoot in 3 days or fewer"* — and
+CinePilot re-plans against it.
+
+Only the decisions are recomputed. The screenplay analysis, budget breakdown
+and production research still describe the same script and the same world, so
+they're seeded into the new session rather than paid for again; the plan,
+storyboard and call sheet are re-derived. A re-plan runs a second ADK
+`SequentialAgent` over the *same* agents, so it's genuinely the same reasoning
+under a changed constraint, not a separate code path.
+
+The agents are instructed to treat the directive as binding but not to lie for
+it. Asked to drop a train-station sequence and all VFX, the plan came back with
+a single-apartment practical-effects strategy *and* surfaced the cost:
+
+> The key challenge will be re-imagining the narrative climax (Scene 2) to fit
+> the location.
+
+Because each output tab unlocks as its own stage completes, you watch the plan,
+storyboard and call sheet re-lock and re-derive live while the upstream
+analysis stays put.
 
 ## Why Parallel matters here
 
@@ -188,6 +218,7 @@ call_sheet.pdf             Rendered call sheet PDF
 |---|---|
 | `POST /api/projects` | Upload a screenplay PDF, create a project |
 | `POST /api/projects/{id}/run` | Start the background pipeline |
+| `POST /api/projects/{id}/replan` | Re-plan under a new producer constraint |
 | `GET /api/projects/{id}` / `/status` | Project state and per-stage status |
 | `GET /api/projects/{id}/screenplay` | Screenplay Analysis |
 | `GET /api/projects/{id}/budget` | Budget Analysis |
@@ -201,6 +232,12 @@ call_sheet.pdf             Rendered call sheet PDF
 Every per-stage `GET` returns `404` until that stage has completed, and
 `500` if the persisted file somehow fails schema validation — a failed or
 in-progress stage never silently returns fabricated or partial data.
+
+`POST /run` and `POST /replan` are rate limited per caller IP and globally,
+since a publicly reachable deployment otherwise leaves the project's Vertex
+quota open to anyone. Limits are env-tunable
+(`RATE_LIMIT_RUNS_PER_IP_PER_HOUR`, `RATE_LIMIT_RUNS_GLOBAL_PER_HOUR`,
+`RATE_LIMIT_UPLOADS_PER_IP_PER_HOUR`); `0` disables a given check.
 
 ## Testing
 
